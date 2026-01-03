@@ -89,6 +89,7 @@ a:hover {
     background: transparent;
     backdrop-filter: none;
     border-bottom: 1px solid transparent;
+    box-shadow: none;
     z-index: 1000;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -266,7 +267,7 @@ a:hover {
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    margin-top: 80px;
+    margin-top: 0;
     background-image: url('../assets/hero_background1.png');
     background-size: cover;
     background-position: center;

@@ -5,7 +5,7 @@
  */
 
 // Default admin password (can be changed)
-const ADMIN_PASSWORD = 'vikse2024';
+const ADMIN_PASSWORD = 'Duekadugruble8/kunst';
 
 // Initialize default data
 const defaultArtworks = [
@@ -126,7 +126,7 @@ const defaultArtworks = [
         year: 2024,
         description: 'Nytt verk',
         descriptionEn: 'New artwork',
-        image: 'images/12.jpg',
+        image: 'images/12.png',
         featured: false
     },
     {
@@ -136,7 +136,7 @@ const defaultArtworks = [
         year: 2024,
         description: 'Nytt verk',
         descriptionEn: 'New artwork',
-        image: 'images/13.jpg',
+        image: 'images/13.png',
         featured: false
     },
     {
