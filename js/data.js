@@ -4,8 +4,8 @@
  * Uses localStorage for persistence
  */
 
-// Default admin password (can be changed)
-const ADMIN_PASSWORD = 'Duekadugruble8/kunst';
+// Default admin passwords (can be changed)
+const ADMIN_PASSWORDS = ['Duekadugruble8/kunst', 'Doffen58??'];
 
 // Initialize default data
 const defaultArtworks = [
@@ -299,7 +299,7 @@ const DataManager = {
 
     // Admin authentication
     checkPassword(password) {
-        return password === ADMIN_PASSWORD;
+        return ADMIN_PASSWORDS.includes(password);
     }
 };
 
