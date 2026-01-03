@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Johan Ask Vikse - Etablert billedkunstner fra Haugesund. Utforsk tegninger, tusj, blyant og akrylmalerier.">
+    <title>Johan Ask Vikse - Billedkunstner</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="main-header">
+        <div class="nav-container">
+            <a href="#home" class="logo">
+                <img src="assets/logo1.svg" alt="Johan Ask Vikse Logo">
+            </a>
+
+            <!-- Hamburger Menu Button -->
+            <button class="hamburger" aria-label="Toggle menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#gallery" data-no="Galleri" data-en="Gallery">Galleri</a></li>
+                    <li><a href="#about" data-no="Om" data-en="About">Om</a></li>
+                    <li><a href="#events" data-no="Events" data-en="Events">Events</a></li>
+                    <li><a href="#contact" data-no="Kontakt" data-en="Contact">Kontakt</a></li>
+                </ul>
+                <!-- Language toggle in mobile menu -->
+                <div class="language-toggle mobile-lang">
+                    <button class="lang-btn active" data-lang="no">NO</button>
+                    <span class="separator">/</span>
+                    <button class="lang-btn" data-lang="en">EN</button>
+                </div>
+            </nav>
+
+            <!-- Desktop language toggle -->
+            <div class="language-toggle desktop-lang">
+                <button class="lang-btn active" data-lang="no">NO</button>
+                <span class="separator">/</span>
+                <button class="lang-btn" data-lang="en">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="nav-overlay"></div>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Johan Ask Vikse</h1>
+            <p class="hero-subtitle" data-no="Etablert billedkunstner fra Haugesund" data-en="Established visual artist from Haugesund">
+                Etablert billedkunstner fra Haugesund
+            </p>
+            <p class="hero-description" data-no="Detaljerte verk i tusj, blyant og akryl" data-en="Detailed works in ink, pencil and acrylic">
+                Detaljerte verk i tusj, blyant og akryl
+            </p>
+            <div class="hero-buttons">
+                <a href="#gallery" class="cta-button cta-primary" data-no="Utforsk kunsten" data-en="Explore the art">Utforsk kunsten</a>
+                <a href="#about" class="cta-button cta-secondary" data-no="Om kunstneren" data-en="About the artist">Om kunstneren</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Works Preview -->
+    <section class="featured-preview">
+        <div class="container">
+            <h2 class="section-title" data-no="Utvalgte verk" data-en="Featured Works">Utvalgte verk</h2>
+            <div class="featured-grid" id="featured-works">
+                <!-- Featured works will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery-section">
+        <div class="container">
+            <h2 class="section-title" data-no="Galleri" data-en="Gallery">Galleri</h2>
+            <div class="gallery-grid" id="gallery-grid">
+                <!-- Gallery items will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <div class="about-content">
+                <h2 class="section-title" data-no="Om kunstneren" data-en="About the Artist">Om kunstneren</h2>
+                <div class="about-with-image">
+                    <div class="about-image">
+                        <img src="images/JAV_bilde.jpg" alt="Johan Ask Vikse">
+                    </div>
+                    <div class="about-text">
+                        <div class="text-block" data-no-content="true">
+                        <p>Johan Ask Vikse er en etablert billedkunstner fra Haugesund, Norge, med lang fartstid innen visuell kunst og tegning. Hans arbeid kjennetegnes av et detaljert visuelt uttrykk, ofte med mønstre og symbolikk som inviterer til fordypning.</p>
+
+                        <p>Vikse arbeider profesjonelt med kunst og har vært aktiv i kunstmiljøet i mange år. Han jobber primært med tegning, tusj, blyant og akryl, og har utviklet en distinkt stil som kombinerer teknisk presisjon med kunstnerisk utforskning.</p>
+
+                        <p>Som medlem av Tegnerforbundet, Norske Billedkunstnere og Haugaland Kunstverk, er han en aktiv aktør i det norske kunstmiljøet. Nylig ble han tildelt en kunstpris av Haugesund Kunstforening – en viktig lokal profesjonell utmerkelse som anerkjenner hans bidrag til kunsten.</p>
+
+                        <p>Gjennom utallige separatutstillinger og gruppeutstillinger har Vikse etablert seg som en sentral kunstner i Haugesund-regionen, med en kunstnerisk praksis som fortsetter å utvikle seg og inspirere.</p>
+                    </div>
+                    <div class="text-block" data-en-content="true" style="display: none;">
+                        <p>Johan Ask Vikse is an established visual artist from Haugesund, Norway, with extensive experience in visual arts and drawing. His work is characterized by a detailed visual expression, often featuring patterns and symbolism that invite contemplation.</p>
+
+                        <p>Vikse works professionally with art and has been active in the art community for many years. He primarily works with drawing, ink, pencil and acrylic, and has developed a distinctive style that combines technical precision with artistic exploration.</p>
+
+                        <p>As a member of the Norwegian Association of Illustrators, Norwegian Visual Artists and Haugaland Kunstnerverk, he is an active player in the Norwegian art scene. He was recently awarded an art prize by Haugesund Art Association – an important local professional recognition that acknowledges his contribution to the arts.</p>
+
+                        <p>Through countless solo exhibitions and group exhibitions, Vikse has established himself as a central artist in the Haugesund region, with an artistic practice that continues to evolve and inspire.</p>
+                    </div>
+                    </div>
+                </div>
+                <div class="memberships">
+                    <h3 data-no="Medlemskap" data-en="Memberships">Medlemskap</h3>
+                    <ul>
+                        <li>Tegnerforbundet</li>
+                        <li>Norske Billedkunstnere</li>
+                        <li>Haugaland Kunstverk</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section id="events" class="events-section">
+        <div class="container">
+            <h2 class="section-title" data-no="Events" data-en="Events">Events</h2>
+
+            <div class="events-container">
+                <div class="events-category">
+                    <h3 data-no="Tidligere utstillinger" data-en="Past Exhibitions">Tidligere utstillinger</h3>
+                    <div class="events-list past-events">
+                        <div class="event-item">
+                            <div class="event-date">2016</div>
+                            <div class="event-details">
+                                <h4>Prog & Rock Festivalen</h4>
+                                <p class="event-location">Haugesund</p>
+                            </div>
+                        </div>
+                        <div class="event-item">
+                            <div class="event-date">2015</div>
+                            <div class="event-details">
+                                <h4>Rom For / Galleri Rom For</h4>
+                                <p class="event-location">Haugesund</p>
+                            </div>
+                        </div>
+                        <div class="event-item">
+                            <div class="event-date">2013</div>
+                            <div class="event-details">
+                                <h4>Haugaland Kunstverk</h4>
+                                <p class="event-location">Haugesund</p>
+                            </div>
+                        </div>
+                        <div class="event-item">
+                            <div class="event-date">2011</div>
+                            <div class="event-details">
+                                <h4>Galleri Jensen</h4>
+                                <p class="event-location">Haugesund</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="events-category">
+                    <h3 data-no="Kommende utstillinger" data-en="Upcoming Exhibitions">Kommende utstillinger</h3>
+                    <div class="events-list" id="upcoming-events">
+                        <!-- Upcoming events will be loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <h2 class="section-title" data-no="Kontakt" data-en="Contact">Kontakt</h2>
+
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3 data-no="Kontaktinformasjon" data-en="Contact Information">Kontaktinformasjon</h3>
+                    <div class="info-item">
+                        <strong data-no="Bosted" data-en="Location">Bosted</strong>
+                        <p>Rogaland, Haugesund</p>
+                    </div>
+                    <div class="info-item">
+                        <strong data-no="Mobil" data-en="Mobile">Mobil</strong>
+                        <p><a href="tel:+4797711032">+47 97 711 032</a></p>
+                    </div>
+                    <div class="info-item">
+                        <strong data-no="E-post" data-en="Email">E-post</strong>
+                        <p><a href="mailto:johanaskvikse@hotmail.com">johanaskvikse@hotmail.com</a></p>
+                    </div>
+                    <div class="info-item">
+                        <strong data-no="Nettside" data-en="Website">Nettside</strong>
+                        <p><a href="http://www.johanvikse.com" target="_blank">www.johanvikse.com</a></p>
+                    </div>
+                    <div class="info-item">
+                        <strong>Instagram</strong>
+                        <p><a href="https://instagram.com/art_by_vikse" target="_blank">@art_by_vikse</a></p>
+                    </div>
+                </div>
+
+                <div class="contact-form-wrapper">
+                    <h3 data-no="Send en melding" data-en="Send a Message">Send en melding</h3>
+                    <form id="contact-form" class="contact-form">
+                        <div class="form-group">
+                            <label for="name" data-no="Navn" data-en="Name">Navn</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">E-post</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message" data-no="Melding" data-en="Message">Melding</label>
+                            <textarea id="message" name="message" rows="6" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-button" data-no="Send melding" data-en="Send message">Send melding</button>
+                    </form>
+                    <div id="form-message" class="form-message"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> Johan Ask Vikse. <span data-no="Alle rettigheter reservert." data-en="All rights reserved.">Alle rettigheter reservert.</span></p>
+            <button class="admin-icon" id="admin-toggle" aria-label="Admin">⚙️</button>
+        </div>
+    </footer>
+
+    <!-- Admin Login Modal -->
+    <div id="admin-login-modal" class="modal">
+        <div class="modal-content admin-login">
+            <span class="close">&times;</span>
+            <h2 data-no="Admin-innlogging" data-en="Admin Login">Admin-innlogging</h2>
+            <form id="admin-login-form">
+                <div class="form-group">
+                    <label for="admin-password" data-no="Passord" data-en="Password">Passord</label>
+                    <input type="password" id="admin-password" name="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" data-no="Logg inn" data-en="Login">Logg inn</button>
+            </form>
+            <div id="login-error" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Lightbox for Gallery -->
+    <div id="lightbox" class="lightbox">
+        <span class="lightbox-close">&times;</span>
+        <div class="lightbox-content">
+            <button class="lightbox-nav prev">‹</button>
+            <div class="lightbox-image-container">
+                <img src="" alt="" id="lightbox-image">
+                <div class="lightbox-info">
+                    <h3 id="lightbox-title"></h3>
+                    <p id="lightbox-year"></p>
+                    <p id="lightbox-description"></p>
+                </div>
+            </div>
+            <button class="lightbox-nav next">›</button>
+        </div>
+    </div>
+
+    <!-- Admin Panel (Hidden by default) -->
+    <div id="admin-panel" class="admin-panel" style="display: none;">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h2>Admin Panel</h2>
+                <button id="admin-close" class="admin-close-btn">× <span data-no="Lukk" data-en="Close">Lukk</span></button>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="tab-btn active" data-tab="artworks" data-no="Kunstverk" data-en="Artworks">Kunstverk</button>
+                <button class="tab-btn" data-tab="events" data-no="Events" data-en="Events">Events</button>
+            </div>
+
+            <!-- Artworks Tab -->
+            <div id="artworks-tab" class="tab-content active">
+                <h3 data-no="Administrer kunstverk" data-en="Manage Artworks">Administrer kunstverk</h3>
+                <form id="artwork-form" class="admin-form">
+                    <input type="hidden" id="artwork-id" name="id">
+                    <div class="form-group">
+                        <label for="artwork-title" data-no="Tittel" data-en="Title">Tittel</label>
+                        <input type="text" id="artwork-title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="artwork-title-en" data-no="Tittel (engelsk)" data-en="Title (English)">Tittel (engelsk)</label>
+                        <input type="text" id="artwork-title-en" name="titleEn">
+                    </div>
+                    <div class="form-group">
+                        <label for="artwork-year" data-no="År" data-en="Year">År</label>
+                        <input type="number" id="artwork-year" name="year">
+                    </div>
+                    <div class="form-group">
+                        <label for="artwork-description" data-no="Beskrivelse" data-en="Description">Beskrivelse</label>
+                        <textarea id="artwork-description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="artwork-description-en" data-no="Beskrivelse (engelsk)" data-en="Description (English)">Beskrivelse (engelsk)</label>
+                        <textarea id="artwork-description-en" name="descriptionEn" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="artwork-image" data-no="Bilde URL" data-en="Image URL">Bilde URL</label>
+                        <input type="text" id="artwork-image" name="image" required>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="artwork-featured" name="featured">
+                            <span data-no="Fremhevet verk" data-en="Featured work">Fremhevet verk</span>
+                        </label>
+                    </div>
+                    <button type="submit" data-no="Lagre kunstverk" data-en="Save Artwork">Lagre kunstverk</button>
+                    <button type="button" id="cancel-artwork" data-no="Avbryt" data-en="Cancel">Avbryt</button>
+                </form>
+
+                <div class="admin-list">
+                    <h4 data-no="Eksisterende kunstverk" data-en="Existing Artworks">Eksisterende kunstverk</h4>
+                    <div id="artworks-list"></div>
+                </div>
+            </div>
+
+            <!-- Events Tab -->
+            <div id="events-tab" class="tab-content">
+                <h3 data-no="Administrer events" data-en="Manage Events">Administrer events</h3>
+                <form id="event-form" class="admin-form">
+                    <input type="hidden" id="event-id" name="id">
+                    <div class="form-group">
+                        <label for="event-title" data-no="Tittel" data-en="Title">Tittel</label>
+                        <input type="text" id="event-title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-title-en" data-no="Tittel (engelsk)" data-en="Title (English)">Tittel (engelsk)</label>
+                        <input type="text" id="event-title-en" name="titleEn">
+                    </div>
+                    <div class="form-group">
+                        <label for="event-date" data-no="Dato" data-en="Date">Dato</label>
+                        <input type="date" id="event-date" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-location" data-no="Sted" data-en="Location">Sted</label>
+                        <input type="text" id="event-location" name="location" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-description" data-no="Beskrivelse" data-en="Description">Beskrivelse</label>
+                        <textarea id="event-description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-description-en" data-no="Beskrivelse (engelsk)" data-en="Description (English)">Beskrivelse (engelsk)</label>
+                        <textarea id="event-description-en" name="descriptionEn" rows="3"></textarea>
+                    </div>
+                    <button type="submit" data-no="Lagre event" data-en="Save Event">Lagre event</button>
+                    <button type="button" id="cancel-event" data-no="Avbryt" data-en="Cancel">Avbryt</button>
+                </form>
+
+                <div class="admin-list">
+                    <h4 data-no="Kommende events" data-en="Upcoming Events">Kommende events</h4>
+                    <div id="events-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
