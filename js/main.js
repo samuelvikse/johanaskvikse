@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeLanguage();
     initializeNavigation();
     initializeHamburgerMenu();
+    initializeScrollHeader();
     loadFeaturedWorks();
     loadGallery();
     loadEvents();
@@ -103,20 +104,22 @@ function initializeNavigation() {
         });
     });
 
-    // Header scroll effect
-    let lastScroll = 0;
+}
+
+/**
+ * SCROLL HEADER EFFECT
+ */
+function initializeScrollHeader() {
     const header = document.querySelector('.main-header');
 
     window.addEventListener('scroll', () => {
-        const currentScroll = window.pageYOffset;
+        const scrollPosition = window.pageYOffset;
 
-        if (currentScroll > 100) {
-            header.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+        if (scrollPosition > 50) {
+            header.classList.add('scrolled');
         } else {
-            header.style.boxShadow = 'none';
+            header.classList.remove('scrolled');
         }
-
-        lastScroll = currentScroll;
     });
 }
 

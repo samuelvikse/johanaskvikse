@@ -118,6 +118,56 @@ const defaultArtworks = [
         descriptionEn: 'Detailed artwork',
         image: 'images/11.png',
         featured: false
+    },
+    {
+        id: 12,
+        title: 'Kunstverk 12',
+        titleEn: 'Artwork 12',
+        year: 2024,
+        description: 'Nytt verk',
+        descriptionEn: 'New artwork',
+        image: 'images/12.jpg',
+        featured: false
+    },
+    {
+        id: 13,
+        title: 'Kunstverk 13',
+        titleEn: 'Artwork 13',
+        year: 2024,
+        description: 'Nytt verk',
+        descriptionEn: 'New artwork',
+        image: 'images/13.jpg',
+        featured: false
+    },
+    {
+        id: 14,
+        title: 'Kunstverk 14',
+        titleEn: 'Artwork 14',
+        year: 2024,
+        description: 'Nytt verk',
+        descriptionEn: 'New artwork',
+        image: 'images/14.png',
+        featured: false
+    },
+    {
+        id: 15,
+        title: 'Kunstverk 15',
+        titleEn: 'Artwork 15',
+        year: 2024,
+        description: 'Nytt verk',
+        descriptionEn: 'New artwork',
+        image: 'images/15.png',
+        featured: false
+    },
+    {
+        id: 16,
+        title: 'Kunstverk 16',
+        titleEn: 'Artwork 16',
+        year: 2024,
+        description: 'Nytt verk',
+        descriptionEn: 'New artwork',
+        image: 'images/16.png',
+        featured: false
     }
 ];
 
