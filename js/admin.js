@@ -57,6 +57,8 @@ const AdminPanel = {
     initializeArtworkForm() {
         const form = document.getElementById('artwork-form');
         const cancelBtn = document.getElementById('cancel-artwork');
+        const imageInput = document.getElementById('artwork-image-file');
+        const imagePreview = document.getElementById('image-preview');
 
         if (form) {
             form.addEventListener('submit', (e) => {
@@ -70,6 +72,62 @@ const AdminPanel = {
                 this.resetArtworkForm();
             });
         }
+
+        // Handle image file upload
+        if (imageInput) {
+            imageInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    this.handleImageUpload(file, imagePreview);
+                }
+            });
+        }
+    },
+
+    handleImageUpload(file, previewElement) {
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('Vennligst velg en bildefil');
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Bildet er for stort. Maks størrelse er 5MB.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            // Show preview
+            if (previewElement) {
+                previewElement.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 4px;">`;
+            }
+
+            // Generate filename based on next ID
+            const artworks = DataManager.getArtworks();
+            const nextId = artworks.length > 0 ? Math.max(...artworks.map(a => a.id)) + 1 : 1;
+            const extension = file.name.split('.').pop();
+            const filename = `${nextId}.${extension}`;
+
+            // Set the image path
+            document.getElementById('artwork-image').value = `images/${filename}`;
+
+            // Store the image data for later download
+            this.pendingImageUpload = {
+                filename: filename,
+                dataUrl: e.target.result
+            };
+
+            // Show instruction to user
+            const instruction = document.getElementById('upload-instruction');
+            if (instruction) {
+                instruction.textContent = `Bilde klar: ${filename} - Last ned bildet etter lagring og plasser det i images/ mappen`;
+                instruction.style.color = '#8b7355';
+                instruction.style.fontWeight = '600';
+            }
+        };
+        reader.readAsDataURL(file);
     },
 
     saveArtwork() {
@@ -92,6 +150,12 @@ const AdminPanel = {
             DataManager.addArtwork(artwork);
         }
 
+        // If there's a pending image upload, trigger download
+        if (this.pendingImageUpload) {
+            this.downloadImage(this.pendingImageUpload.dataUrl, this.pendingImageUpload.filename);
+            this.pendingImageUpload = null;
+        }
+
         this.resetArtworkForm();
         this.loadArtworksList();
 
@@ -100,6 +164,17 @@ const AdminPanel = {
             MainApp.loadGallery();
             MainApp.loadFeaturedWorks();
         }
+    },
+
+    downloadImage(dataUrl, filename) {
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        alert(`Bilde "${filename}" lastet ned! Plasser den i images/ mappen i prosjektet ditt.`);
     },
 
     loadArtworksList() {
@@ -114,18 +189,27 @@ const AdminPanel = {
         }
 
         container.innerHTML = artworks.map(artwork => `
-            <div class="admin-item">
-                <div class="admin-item-info">
-                    <h5>${artwork.title} ${artwork.titleEn ? `/ ${artwork.titleEn}` : ''}</h5>
-                    <p>${artwork.year || 'Ingen år'} ${artwork.featured ? '★ Fremhevet' : ''}</p>
+            <div class="admin-item-with-image">
+                <div class="admin-item-thumbnail">
+                    <img src="${artwork.image}" alt="${artwork.title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\'%3E%3Crect fill=\'%23ddd\' width=\'100\' height=\'100\'/%3E%3Ctext fill=\'%23999\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\'%3ENo Image%3C/text%3E%3C/svg%3E'">
                 </div>
-                <div class="admin-item-actions">
-                    <button class="edit-btn" onclick="AdminPanel.editArtwork(${artwork.id})">
-                        ${this.getTranslation('Rediger', 'Edit')}
-                    </button>
-                    <button class="delete-btn" onclick="AdminPanel.deleteArtwork(${artwork.id})">
-                        ${this.getTranslation('Slett', 'Delete')}
-                    </button>
+                <div class="admin-item-content">
+                    <div class="admin-item-info">
+                        <h5>${artwork.title} ${artwork.titleEn ? `<span class="subtitle">/ ${artwork.titleEn}</span>` : ''}</h5>
+                        <p class="artwork-meta">
+                            <span class="year">${artwork.year || 'Ingen år'}</span>
+                            ${artwork.featured ? '<span class="featured-badge">★ Fremhevet</span>' : ''}
+                        </p>
+                        <p class="artwork-path">${artwork.image}</p>
+                    </div>
+                    <div class="admin-item-actions">
+                        <button class="edit-btn" onclick="AdminPanel.editArtwork(${artwork.id})">
+                            ${this.getTranslation('Rediger', 'Edit')}
+                        </button>
+                        <button class="delete-btn" onclick="AdminPanel.deleteArtwork(${artwork.id})">
+                            ${this.getTranslation('Slett', 'Delete')}
+                        </button>
+                    </div>
                 </div>
             </div>
         `).join('');
@@ -169,6 +253,17 @@ const AdminPanel = {
     resetArtworkForm() {
         document.getElementById('artwork-form').reset();
         document.getElementById('artwork-id').value = '';
+
+        // Clear image preview
+        const preview = document.getElementById('image-preview');
+        if (preview) preview.innerHTML = '';
+
+        // Clear upload instruction
+        const instruction = document.getElementById('upload-instruction');
+        if (instruction) instruction.textContent = '';
+
+        // Clear pending upload
+        this.pendingImageUpload = null;
     },
 
     /**

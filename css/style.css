@@ -1412,17 +1412,95 @@ section {
     transform: translateX(4px);
 }
 
+/* New artwork item with image */
+.admin-item-with-image {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--color-bg-alt);
+    margin-bottom: 1rem;
+    border-left: 3px solid var(--color-accent);
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+    transition: var(--transition-fast);
+}
+
+.admin-item-with-image:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateX(4px);
+}
+
+.admin-item-thumbnail {
+    flex-shrink: 0;
+    width: 100px;
+    height: 100px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+}
+
+.admin-item-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-item-content {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
 .admin-item-info h5 {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.5rem;
     color: var(--color-primary);
+}
+
+.admin-item-info h5 .subtitle {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--color-text-light);
 }
 
 .admin-item-info p {
     font-size: 0.875rem;
     color: var(--color-text-light);
-    line-height: 1.4;
+    line-height: 1.6;
+}
+
+.artwork-meta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.artwork-meta .year {
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.featured-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    background: var(--color-accent);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.artwork-path {
+    font-size: 0.8rem;
+    font-family: monospace;
+    color: #999;
 }
 
 .admin-item-actions {

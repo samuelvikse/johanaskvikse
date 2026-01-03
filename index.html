@@ -310,8 +310,14 @@
                         <textarea id="artwork-description-en" name="descriptionEn" rows="3"></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="artwork-image" data-no="Bilde URL" data-en="Image URL">Bilde URL</label>
-                        <input type="text" id="artwork-image" name="image" required>
+                        <label for="artwork-image-file" data-no="Last opp bilde" data-en="Upload Image">Last opp bilde</label>
+                        <input type="file" id="artwork-image-file" accept="image/*" style="margin-bottom: 0.5rem;">
+                        <div id="image-preview" style="margin-top: 0.5rem;"></div>
+                        <p id="upload-instruction" style="font-size: 0.85rem; margin-top: 0.5rem; color: #666;"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="artwork-image" data-no="Bilde URL (eller skriv manuelt)" data-en="Image URL (or enter manually)">Bilde URL (eller skriv manuelt)</label>
+                        <input type="text" id="artwork-image" name="image" required placeholder="images/1.png">
                     </div>
                     <div class="form-group checkbox-group">
                         <label>
