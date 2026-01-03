@@ -369,10 +369,9 @@ function initializeContactForm() {
 
     if (!form) return;
 
-    form.addEventListener('submit', async function(e) {
+    form.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        const formData = new FormData(form);
         const submitButton = form.querySelector('button[type="submit"]');
 
         // Disable button and show loading state
@@ -380,39 +379,18 @@ function initializeContactForm() {
         const originalText = submitButton.textContent;
         submitButton.textContent = currentLanguage === 'en' ? 'Sending...' : 'Sender...';
 
-        try {
-            // Send email using Formspree
-            const response = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Accept': 'application/json'
-                }
-            });
+        // Show success message (form submission temporarily disabled)
+        setTimeout(() => {
+            const successText = currentLanguage === 'en'
+                ? 'Thank you for your message! Please contact us directly at johanaskvikse@hotmail.com'
+                : 'Takk for din henvendelse! Vennligst kontakt oss direkte på johanaskvikse@hotmail.com';
 
-            if (response.ok) {
-                // Show success message
-                const successText = currentLanguage === 'en'
-                    ? 'Thank you for your message! We will get back to you soon.'
-                    : 'Takk for din henvendelse! Vi tar kontakt snart.';
+            messageDiv.textContent = successText;
+            messageDiv.className = 'form-message success';
 
-                messageDiv.textContent = successText;
-                messageDiv.className = 'form-message success';
+            // Reset form
+            form.reset();
 
-                // Reset form
-                form.reset();
-            } else {
-                throw new Error('Form submission failed');
-            }
-        } catch (error) {
-            // Show error message
-            const errorText = currentLanguage === 'en'
-                ? 'Something went wrong. Please try again or contact us directly at johanaskvikse@hotmail.com'
-                : 'Noe gikk galt. Vennligst prøv igjen eller kontakt oss direkte på johanaskvikse@hotmail.com';
-
-            messageDiv.textContent = errorText;
-            messageDiv.className = 'form-message error';
-        } finally {
             // Re-enable button
             submitButton.disabled = false;
             submitButton.textContent = originalText;
@@ -422,7 +400,7 @@ function initializeContactForm() {
                 messageDiv.className = 'form-message';
                 messageDiv.textContent = '';
             }, 8000);
-        }
+        }, 500);
     });
 }
 

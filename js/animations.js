@@ -88,95 +88,39 @@ function initScrollAnimations() {
 }
 
 /**
- * Parallax effect for hero image
+ * Parallax effect for hero background
  */
 function initParallaxEffect() {
     const hero = document.querySelector('.hero');
-    const heroImage = document.querySelector('.hero-image img');
-
-    if (!hero || !heroImage) return;
+    if (!hero) return;
 
     window.addEventListener('scroll', () => {
         const scrolled = window.pageYOffset;
         const heroHeight = hero.offsetHeight;
 
         if (scrolled < heroHeight) {
-            // Subtle parallax - image moves slower than scroll
-            const parallaxValue = scrolled * 0.5;
-            heroImage.style.transform = `translateY(${parallaxValue}px) scale(1.05)`;
+            // Subtle parallax - background moves slower than scroll
+            const parallaxValue = scrolled * 0.3;
+            hero.style.backgroundPositionY = `${parallaxValue}px`;
         }
     }, { passive: true });
 }
 
 /**
- * Smooth scroll indicator (disabled)
+ * Smooth scroll indicator
  */
 function initSmoothScrollIndicator() {
-    // Disabled - scroll indicator removed per user request
+    // Placeholder for future scroll indicator if needed
     return;
 }
 
 /**
- * Mouse follow effect for gallery items (disabled for cleaner hover)
+ * Mouse follow effect for gallery items
  */
 function initMouseFollowEffect() {
-    // Disabled - using simpler CSS hover effects instead
+    // Using CSS hover effects - no JS needed
     return;
 }
-
-/**
- * Smooth reveal for images as they load
- */
-function initImageReveal() {
-    const images = document.querySelectorAll('img');
-
-    images.forEach(img => {
-        img.style.opacity = '0';
-        img.style.transition = 'opacity 0.6s ease';
-
-        if (img.complete) {
-            img.style.opacity = '1';
-        } else {
-            img.addEventListener('load', () => {
-                img.style.opacity = '1';
-            });
-        }
-    });
-}
-
-/**
- * Navigation header animation on scroll
- */
-function initHeaderAnimation() {
-    const header = document.querySelector('.main-header');
-    let lastScroll = 0;
-
-    window.addEventListener('scroll', () => {
-        const currentScroll = window.pageYOffset;
-
-        if (currentScroll > 100) {
-            header.style.transform = 'translateY(0)';
-            header.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
-        } else {
-            header.style.boxShadow = 'none';
-        }
-
-        // Hide header on scroll down, show on scroll up
-        if (currentScroll > lastScroll && currentScroll > 500) {
-            header.style.transform = 'translateY(-100%)';
-        } else {
-            header.style.transform = 'translateY(0)';
-        }
-
-        lastScroll = currentScroll;
-    }, { passive: true });
-
-    // Add transition
-    header.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
-}
-
-// Initialize header animation
-document.addEventListener('DOMContentLoaded', initHeaderAnimation);
 
 /**
  * Add luxury hover effect to buttons

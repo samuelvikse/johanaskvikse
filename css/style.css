@@ -1710,7 +1710,7 @@ section {
     }
 
     .hero {
-        margin-top: 120px;
+        margin-top: 0;
     }
 
     .hero-buttons {
