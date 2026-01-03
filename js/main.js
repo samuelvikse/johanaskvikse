@@ -196,7 +196,6 @@ function loadFeaturedWorks() {
 
     container.innerHTML = featured.map(artwork => {
         const title = currentLanguage === 'en' && artwork.titleEn ? artwork.titleEn : artwork.title;
-        const description = currentLanguage === 'en' && artwork.descriptionEn ? artwork.descriptionEn : artwork.description;
 
         return `
             <div class="featured-item" data-artwork-id="${artwork.id}">
@@ -369,9 +368,10 @@ function initializeContactForm() {
 
     if (!form) return;
 
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
+        const formData = new FormData(form);
         const submitButton = form.querySelector('button[type="submit"]');
 
         // Disable button and show loading state
@@ -379,18 +379,39 @@ function initializeContactForm() {
         const originalText = submitButton.textContent;
         submitButton.textContent = currentLanguage === 'en' ? 'Sending...' : 'Sender...';
 
-        // Show success message (form submission temporarily disabled)
-        setTimeout(() => {
-            const successText = currentLanguage === 'en'
-                ? 'Thank you for your message! Please contact us directly at johanaskvikse@hotmail.com'
-                : 'Takk for din henvendelse! Vennligst kontakt oss direkte på johanaskvikse@hotmail.com';
+        try {
+            // Send email using Formspree
+            const response = await fetch('https://formspree.io/f/meeolryz', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
 
-            messageDiv.textContent = successText;
-            messageDiv.className = 'form-message success';
+            if (response.ok) {
+                // Show success message
+                const successText = currentLanguage === 'en'
+                    ? 'Thank you for your message! We will get back to you soon.'
+                    : 'Takk for din henvendelse! Vi tar kontakt snart.';
 
-            // Reset form
-            form.reset();
+                messageDiv.textContent = successText;
+                messageDiv.className = 'form-message success';
 
+                // Reset form
+                form.reset();
+            } else {
+                throw new Error('Form submission failed');
+            }
+        } catch (error) {
+            // Show error message
+            const errorText = currentLanguage === 'en'
+                ? 'Something went wrong. Please try again or contact us directly at johanaskvikse@hotmail.com'
+                : 'Noe gikk galt. Vennligst prøv igjen eller kontakt oss direkte på johanaskvikse@hotmail.com';
+
+            messageDiv.textContent = errorText;
+            messageDiv.className = 'form-message error';
+        } finally {
             // Re-enable button
             submitButton.disabled = false;
             submitButton.textContent = originalText;
@@ -400,7 +421,7 @@ function initializeContactForm() {
                 messageDiv.className = 'form-message';
                 messageDiv.textContent = '';
             }, 8000);
-        }, 500);
+        }
     });
 }
 
