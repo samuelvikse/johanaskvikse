@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeContactForm();
     initializeAdminToggle();
     setCurrentYear();
+    setSiteVersion();
 });
 
 // Reload featured works on window resize to handle mobile/desktop switch
@@ -199,7 +200,7 @@ function loadFeaturedWorks() {
 
         return `
             <div class="featured-item" data-artwork-id="${artwork.id}">
-                <img src="${artwork.image}" alt="${title}">
+                <img src="${artwork.image}" alt="${title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\'%3E%3Crect fill=\'%23f0f0f0\' width=\'400\' height=\'400\'/%3E%3Ctext fill=\'%23999\' x=\'50%25\' y=\'45%25\' text-anchor=\'middle\' font-family=\'Arial\' font-size=\'16\'%3EImage not found%3C/text%3E%3Ctext fill=\'%23666\' x=\'50%25\' y=\'55%25\' text-anchor=\'middle\' font-family=\'Arial\' font-size=\'12\'%3E${title}%3C/text%3E%3C/svg%3E'">
                 <div class="featured-info">
                     <h3>${title}</h3>
                     <p>${artwork.year || ''}</p>
@@ -229,7 +230,7 @@ function loadGallery() {
 
         return `
             <div class="gallery-item" data-artwork-id="${artwork.id}">
-                <img src="${artwork.image}" alt="${title}">
+                <img src="${artwork.image}" alt="${title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\'%3E%3Crect fill=\'%23f0f0f0\' width=\'400\' height=\'400\'/%3E%3Ctext fill=\'%23999\' x=\'50%25\' y=\'45%25\' text-anchor=\'middle\' font-family=\'Arial\' font-size=\'16\'%3EImage not found%3C/text%3E%3Ctext fill=\'%23666\' x=\'50%25\' y=\'55%25\' text-anchor=\'middle\' font-family=\'Arial\' font-size=\'12\'%3E${title}%3C/text%3E%3C/svg%3E'">
             </div>
         `;
     }).join('');
@@ -498,6 +499,13 @@ function setCurrentYear() {
     const yearSpan = document.getElementById('current-year');
     if (yearSpan) {
         yearSpan.textContent = new Date().getFullYear();
+    }
+}
+
+function setSiteVersion() {
+    const versionSpan = document.getElementById('site-version');
+    if (versionSpan) {
+        versionSpan.textContent = DataManager.getSiteVersion();
     }
 }
 

@@ -156,6 +156,11 @@ const AdminPanel = {
             this.pendingImageUpload = null;
         }
 
+        // Increment version and trigger git push
+        const newVersion = DataManager.incrementVersion();
+        this.updateVersionDisplay();
+        this.gitCommitAndPush(`Update artwork - v${newVersion}`);
+
         this.resetArtworkForm();
         this.loadArtworksList();
 
@@ -240,6 +245,12 @@ const AdminPanel = {
 
         if (confirm(confirmText)) {
             DataManager.deleteArtwork(id);
+
+            // Increment version and trigger git push
+            const newVersion = DataManager.incrementVersion();
+            this.updateVersionDisplay();
+            this.gitCommitAndPush(`Delete artwork - v${newVersion}`);
+
             this.loadArtworksList();
 
             // Reload gallery on main page
@@ -305,6 +316,11 @@ const AdminPanel = {
             // Add new
             DataManager.addEvent(event);
         }
+
+        // Increment version and trigger git push
+        const newVersion = DataManager.incrementVersion();
+        this.updateVersionDisplay();
+        this.gitCommitAndPush(`Update event - v${newVersion}`);
 
         this.resetEventForm();
         this.loadEventsList();
@@ -376,6 +392,12 @@ const AdminPanel = {
 
         if (confirm(confirmText)) {
             DataManager.deleteEvent(id);
+
+            // Increment version and trigger git push
+            const newVersion = DataManager.incrementVersion();
+            this.updateVersionDisplay();
+            this.gitCommitAndPush(`Delete event - v${newVersion}`);
+
             this.loadEventsList();
 
             // Reload events on main page
@@ -396,6 +418,46 @@ const AdminPanel = {
     getTranslation(no, en) {
         const lang = window.MainApp ? MainApp.currentLanguage() : 'no';
         return lang === 'en' ? en : no;
+    },
+
+    updateVersionDisplay() {
+        const versionSpan = document.getElementById('site-version');
+        if (versionSpan) {
+            versionSpan.textContent = DataManager.getSiteVersion();
+        }
+    },
+
+    gitCommitAndPush(commitMessage) {
+        // This function attempts to trigger a git commit and push
+        // Note: This requires a backend service or GitHub Actions to work properly
+        // For now, we'll store the pending commit info in localStorage
+
+        const pendingCommits = JSON.parse(localStorage.getItem('pendingCommits') || '[]');
+        pendingCommits.push({
+            message: commitMessage,
+            timestamp: new Date().toISOString(),
+            version: DataManager.getSiteVersion()
+        });
+        localStorage.setItem('pendingCommits', JSON.stringify(pendingCommits));
+
+        // Log to console for debugging
+        console.log(`Git commit queued: ${commitMessage}`);
+
+        // Show notification
+        const lang = window.MainApp ? MainApp.currentLanguage() : 'no';
+        const notificationText = lang === 'en'
+            ? `Changes saved! Version ${DataManager.getSiteVersion()}`
+            : `Endringer lagret! Versjon ${DataManager.getSiteVersion()}`;
+
+        // Create temporary notification
+        const notification = document.createElement('div');
+        notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #8b7355; color: white; padding: 1rem 1.5rem; border-radius: 4px; z-index: 10000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);';
+        notification.textContent = notificationText;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
     }
 };
 

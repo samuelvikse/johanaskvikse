@@ -1,0 +1,15 @@
+{
+  "name": "johanaskvikse-site",
+  "version": "1.01.0",
+  "description": "Johan Ask Vikse - Artist Portfolio Website",
+  "scripts": {
+    "deploy": "node auto-deploy.js"
+  },
+  "keywords": [
+    "portfolio",
+    "art",
+    "gallery"
+  ],
+  "author": "FutureProof™",
+  "license": "ISC"
+}

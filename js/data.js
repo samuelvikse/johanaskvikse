@@ -193,6 +193,9 @@ const DataManager = {
         if (!localStorage.getItem('events')) {
             this.saveEvents(defaultEvents);
         }
+        if (!localStorage.getItem('siteVersion')) {
+            this.setSiteVersion('1.01');
+        }
     },
 
     // Artworks methods
@@ -300,6 +303,22 @@ const DataManager = {
     // Admin authentication
     checkPassword(password) {
         return ADMIN_PASSWORDS.includes(password);
+    },
+
+    // Version management
+    getSiteVersion() {
+        return localStorage.getItem('siteVersion') || '1.01';
+    },
+
+    setSiteVersion(version) {
+        localStorage.setItem('siteVersion', version);
+    },
+
+    incrementVersion() {
+        const currentVersion = parseFloat(this.getSiteVersion());
+        const newVersion = (currentVersion + 0.01).toFixed(2);
+        this.setSiteVersion(newVersion);
+        return newVersion;
     }
 };
 
