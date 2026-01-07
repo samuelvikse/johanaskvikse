@@ -87,13 +87,15 @@ const AdminPanel = {
     handleImageUpload(file, previewElement) {
         // Validate file type
         if (!file.type.startsWith('image/')) {
-            alert('Vennligst velg en bildefil');
+            const lang = window.MainApp ? MainApp.currentLanguage() : 'no';
+            alert(lang === 'en' ? 'Please select an image file' : 'Vennligst velg en bildefil');
             return;
         }
 
-        // Validate file size (max 5MB)
+        // Validate file size (max 5MB for localStorage limits)
         if (file.size > 5 * 1024 * 1024) {
-            alert('Bildet er for stort. Maks størrelse er 5MB.');
+            const lang = window.MainApp ? MainApp.currentLanguage() : 'no';
+            alert(lang === 'en' ? 'Image is too large. Maximum size is 5MB.' : 'Bildet er for stort. Maks størrelse er 5MB.');
             return;
         }
 
@@ -104,26 +106,20 @@ const AdminPanel = {
                 previewElement.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 4px;">`;
             }
 
-            // Generate filename based on next ID
-            const artworks = DataManager.getArtworks();
-            const nextId = artworks.length > 0 ? Math.max(...artworks.map(a => a.id)) + 1 : 1;
-            const extension = file.name.split('.').pop();
-            const filename = `${nextId}.${extension}`;
+            // Store the base64 data directly
+            this.pendingImageData = e.target.result;
 
-            // Set the image path
-            document.getElementById('artwork-image').value = `images/${filename}`;
+            // Set the image field to indicate an image is ready
+            document.getElementById('artwork-image').value = 'base64-data-uploaded';
 
-            // Store the image data for later download
-            this.pendingImageUpload = {
-                filename: filename,
-                dataUrl: e.target.result
-            };
-
-            // Show instruction to user
+            // Show success message to user
             const instruction = document.getElementById('upload-instruction');
             if (instruction) {
-                instruction.textContent = `Bilde klar: ${filename} - Last ned bildet etter lagring og plasser det i images/ mappen`;
-                instruction.style.color = '#8b7355';
+                const lang = window.MainApp ? MainApp.currentLanguage() : 'no';
+                instruction.textContent = lang === 'en'
+                    ? '✓ Image ready to save'
+                    : '✓ Bilde klar til lagring';
+                instruction.style.color = '#4CAF50';
                 instruction.style.fontWeight = '600';
             }
         };
@@ -132,13 +128,32 @@ const AdminPanel = {
 
     saveArtwork() {
         const id = document.getElementById('artwork-id').value;
+        const imageValue = document.getElementById('artwork-image').value;
+
+        // Use pending image data if available, otherwise keep existing/manual image
+        let imageData = imageValue;
+        if (this.pendingImageData) {
+            imageData = this.pendingImageData;
+        } else if (id) {
+            // If editing and no new image, keep the existing image
+            const existingArtwork = DataManager.getArtworkById(id);
+            if (existingArtwork) {
+                imageData = existingArtwork.image;
+            }
+        } else {
+            // New artwork requires an image
+            const lang = window.MainApp ? MainApp.currentLanguage() : 'no';
+            alert(lang === 'en' ? 'Please upload an image' : 'Vennligst last opp et bilde');
+            return;
+        }
+
         const artwork = {
             title: document.getElementById('artwork-title').value,
             titleEn: document.getElementById('artwork-title-en').value,
             year: document.getElementById('artwork-year').value ? parseInt(document.getElementById('artwork-year').value) : null,
             description: document.getElementById('artwork-description').value,
             descriptionEn: document.getElementById('artwork-description-en').value,
-            image: document.getElementById('artwork-image').value,
+            image: imageData,
             featured: document.getElementById('artwork-featured').checked
         };
 
@@ -150,11 +165,8 @@ const AdminPanel = {
             DataManager.addArtwork(artwork);
         }
 
-        // If there's a pending image upload, trigger download
-        if (this.pendingImageUpload) {
-            this.downloadImage(this.pendingImageUpload.dataUrl, this.pendingImageUpload.filename);
-            this.pendingImageUpload = null;
-        }
+        // Clear pending image data
+        this.pendingImageData = null;
 
         // Increment version and trigger git push
         const newVersion = DataManager.incrementVersion();
@@ -171,16 +183,6 @@ const AdminPanel = {
         }
     },
 
-    downloadImage(dataUrl, filename) {
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        alert(`Bilde "${filename}" lastet ned! Plasser den i images/ mappen i prosjektet ditt.`);
-    },
 
     loadArtworksList() {
         const container = document.getElementById('artworks-list');
@@ -230,8 +232,25 @@ const AdminPanel = {
         document.getElementById('artwork-year').value = artwork.year || '';
         document.getElementById('artwork-description').value = artwork.description || '';
         document.getElementById('artwork-description-en').value = artwork.descriptionEn || '';
-        document.getElementById('artwork-image').value = artwork.image;
+        document.getElementById('artwork-image').value = artwork.image.startsWith('data:') ? 'base64-data-uploaded' : artwork.image;
         document.getElementById('artwork-featured').checked = artwork.featured || false;
+
+        // Show existing image preview if it's base64 data
+        if (artwork.image.startsWith('data:')) {
+            const preview = document.getElementById('image-preview');
+            if (preview) {
+                preview.innerHTML = `<img src="${artwork.image}" alt="Current image" style="max-width: 200px; max-height: 200px; border-radius: 4px;">`;
+            }
+            const instruction = document.getElementById('upload-instruction');
+            if (instruction) {
+                const lang = window.MainApp ? MainApp.currentLanguage() : 'no';
+                instruction.textContent = lang === 'en'
+                    ? 'Current image (upload new to replace)'
+                    : 'Nåværende bilde (last opp nytt for å erstatte)';
+                instruction.style.color = '#666';
+                instruction.style.fontWeight = 'normal';
+            }
+        }
 
         // Scroll to form
         document.getElementById('artwork-form').scrollIntoView({ behavior: 'smooth' });
@@ -273,8 +292,8 @@ const AdminPanel = {
         const instruction = document.getElementById('upload-instruction');
         if (instruction) instruction.textContent = '';
 
-        // Clear pending upload
-        this.pendingImageUpload = null;
+        // Clear pending image data
+        this.pendingImageData = null;
     },
 
     /**
