@@ -99,23 +99,11 @@
                         <img src="images/JAV_bilde.jpg" alt="Johan Ask Vikse">
                     </div>
                     <div class="about-text">
-                        <div class="text-block" data-no-content="true">
-                        <p>Johan Ask Vikse er en etablert billedkunstner fra Haugesund, Norge, med lang fartstid innen visuell kunst og tegning. Hans arbeid kjennetegnes av et detaljert visuelt uttrykk, ofte med mønstre og symbolikk som inviterer til fordypning.</p>
-
-                        <p>Vikse arbeider profesjonelt med kunst og har vært aktiv i kunstmiljøet i mange år. Han jobber primært med tegning, tusj, blyant og akryl, og har utviklet en distinkt stil som kombinerer teknisk presisjon med kunstnerisk utforskning.</p>
-
-                        <p>Som medlem av Tegnerforbundet, Norske Billedkunstnere og Haugaland Kunstverk, er han en aktiv aktør i det norske kunstmiljøet. Nylig ble han tildelt en kunstpris av Haugesund Kunstforening – en viktig lokal profesjonell utmerkelse som anerkjenner hans bidrag til kunsten.</p>
-
-                        <p>Gjennom utallige separatutstillinger og gruppeutstillinger har Vikse etablert seg som en sentral kunstner i Haugesund-regionen, med en kunstnerisk praksis som fortsetter å utvikle seg og inspirere.</p>
+                        <div class="text-block" data-no-content="true" id="about-text-no">
+                        <!-- Norwegian about text will be loaded dynamically -->
                     </div>
-                    <div class="text-block" data-en-content="true" style="display: none;">
-                        <p>Johan Ask Vikse is an established visual artist from Haugesund, Norway, with extensive experience in visual arts and drawing. His work is characterized by a detailed visual expression, often featuring patterns and symbolism that invite contemplation.</p>
-
-                        <p>Vikse works professionally with art and has been active in the art community for many years. He primarily works with drawing, ink, pencil and acrylic, and has developed a distinctive style that combines technical precision with artistic exploration.</p>
-
-                        <p>As a member of the Norwegian Association of Illustrators, Norwegian Visual Artists and Haugaland Kunstnerverk, he is an active player in the Norwegian art scene. He was recently awarded an art prize by Haugesund Art Association – an important local professional recognition that acknowledges his contribution to the arts.</p>
-
-                        <p>Through countless solo exhibitions and group exhibitions, Vikse has established himself as a central artist in the Haugesund region, with an artistic practice that continues to evolve and inspire.</p>
+                    <div class="text-block" data-en-content="true" style="display: none;" id="about-text-en">
+                        <!-- English about text will be loaded dynamically -->
                     </div>
                     </div>
                 </div>
@@ -289,6 +277,7 @@
             <div class="admin-tabs">
                 <button class="tab-btn active" data-tab="artworks" data-no="Kunstverk" data-en="Artworks">Kunstverk</button>
                 <button class="tab-btn" data-tab="events" data-no="Events" data-en="Events">Events</button>
+                <button class="tab-btn" data-tab="about" data-no="Om" data-en="About">Om</button>
             </div>
 
             <!-- Artworks Tab -->
@@ -376,6 +365,24 @@
                     <h4 data-no="Kommende events" data-en="Upcoming Events">Kommende events</h4>
                     <div id="events-list"></div>
                 </div>
+            </div>
+
+            <!-- About Tab -->
+            <div id="about-tab" class="tab-content">
+                <h3 data-no="Rediger Om-tekst" data-en="Edit About Text">Rediger Om-tekst</h3>
+                <form id="about-form" class="admin-form">
+                    <div class="form-group">
+                        <label for="about-text-no-input" data-no="Om-tekst (norsk)" data-en="About Text (Norwegian)">Om-tekst (norsk)</label>
+                        <textarea id="about-text-no-input" name="aboutTextNo" rows="12" style="font-family: inherit;"></textarea>
+                        <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;" data-no="Du kan bruke HTML-tagger som &lt;p&gt; og &lt;br&gt;" data-en="You can use HTML tags like &lt;p&gt; and &lt;br&gt;">Du kan bruke HTML-tagger som &lt;p&gt; og &lt;br&gt;</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="about-text-en-input" data-no="Om-tekst (engelsk)" data-en="About Text (English)">Om-tekst (engelsk)</label>
+                        <textarea id="about-text-en-input" name="aboutTextEn" rows="12" style="font-family: inherit;"></textarea>
+                        <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;" data-no="Du kan bruke HTML-tagger som &lt;p&gt; og &lt;br&gt;" data-en="You can use HTML tags like &lt;p&gt; and &lt;br&gt;">Du kan bruke HTML-tagger som &lt;p&gt; og &lt;br&gt;</p>
+                    </div>
+                    <button type="submit" data-no="Lagre Om-tekst" data-en="Save About Text">Lagre Om-tekst</button>
+                </form>
             </div>
         </div>
     </div>

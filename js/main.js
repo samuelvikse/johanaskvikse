@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadFeaturedWorks();
     loadGallery();
     loadEvents();
+    loadAboutText();
     initializeLightbox();
     initializeContactForm();
     initializeAdminToggle();
@@ -361,6 +362,19 @@ function formatEventDate(dateString) {
 }
 
 /**
+ * ABOUT TEXT LOADING
+ */
+function loadAboutText() {
+    const aboutText = DataManager.getAboutText();
+
+    const noElement = document.getElementById('about-text-no');
+    const enElement = document.getElementById('about-text-en');
+
+    if (noElement) noElement.innerHTML = aboutText.no;
+    if (enElement) enElement.innerHTML = aboutText.en;
+}
+
+/**
  * CONTACT FORM
  */
 function initializeContactForm() {
@@ -514,5 +528,6 @@ window.MainApp = {
     loadGallery,
     loadFeaturedWorks,
     loadEvents,
+    loadAboutText,
     currentLanguage: () => currentLanguage
 };

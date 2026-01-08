@@ -11,9 +11,11 @@ const AdminPanel = {
         this.initializeTabs();
         this.initializeArtworkForm();
         this.initializeEventForm();
+        this.initializeAboutForm();
         this.initializeCloseButton();
         this.loadArtworksList();
         this.loadEventsList();
+        this.loadAboutText();
     },
 
     /**
@@ -429,6 +431,75 @@ const AdminPanel = {
     resetEventForm() {
         document.getElementById('event-form').reset();
         document.getElementById('event-id').value = '';
+    },
+
+    /**
+     * ABOUT TEXT MANAGEMENT
+     */
+    initializeAboutForm() {
+        const form = document.getElementById('about-form');
+
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.saveAboutText();
+            });
+        }
+    },
+
+    loadAboutText() {
+        const aboutText = DataManager.getAboutText();
+
+        // Load into form if elements exist
+        const noInput = document.getElementById('about-text-no-input');
+        const enInput = document.getElementById('about-text-en-input');
+
+        if (noInput) noInput.value = aboutText.no;
+        if (enInput) enInput.value = aboutText.en;
+
+        // Load into main page
+        this.updateAboutDisplay();
+    },
+
+    updateAboutDisplay() {
+        const aboutText = DataManager.getAboutText();
+
+        const noElement = document.getElementById('about-text-no');
+        const enElement = document.getElementById('about-text-en');
+
+        if (noElement) noElement.innerHTML = aboutText.no;
+        if (enElement) enElement.innerHTML = aboutText.en;
+    },
+
+    saveAboutText() {
+        const noText = document.getElementById('about-text-no-input').value;
+        const enText = document.getElementById('about-text-en-input').value;
+
+        DataManager.updateAboutText('no', noText);
+        DataManager.updateAboutText('en', enText);
+
+        // Increment version and trigger git push
+        const newVersion = DataManager.incrementVersion();
+        this.updateVersionDisplay();
+        this.gitCommitAndPush(`Update about text - v${newVersion}`);
+
+        // Update display on main page
+        this.updateAboutDisplay();
+
+        // Show success notification
+        const lang = window.MainApp ? MainApp.currentLanguage() : 'no';
+        const notificationText = lang === 'en'
+            ? 'About text updated successfully!'
+            : 'Om-tekst oppdatert!';
+
+        const notification = document.createElement('div');
+        notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #8b7355; color: white; padding: 1rem 1.5rem; border-radius: 4px; z-index: 10000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);';
+        notification.textContent = notificationText;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
     },
 
     /**

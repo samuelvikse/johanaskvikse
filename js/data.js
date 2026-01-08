@@ -183,6 +183,23 @@ const defaultEvents = [
     }
 ];
 
+const defaultAboutText = {
+    no: `<p>Johan Ask Vikse er en etablert billedkunstner fra Haugesund, Norge, med lang fartstid innen visuell kunst og tegning. Hans arbeid kjennetegnes av et detaljert visuelt uttrykk, ofte med mønstre og symbolikk som inviterer til fordypning.</p>
+
+<p>Vikse arbeider profesjonelt med kunst og har vært aktiv i kunstmiljøet i mange år. Han jobber primært med tegning, tusj, blyant og akryl, og har utviklet en distinkt stil som kombinerer teknisk presisjon med kunstnerisk utforskning.</p>
+
+<p>Som medlem av Tegnerforbundet, Norske Billedkunstnere og Haugaland Kunstverk, er han en aktiv aktør i det norske kunstmiljøet. Nylig ble han tildelt en kunstpris av Haugesund Kunstforening – en viktig lokal profesjonell utmerkelse som anerkjenner hans bidrag til kunsten.</p>
+
+<p>Gjennom utallige separatutstillinger og gruppeutstillinger har Vikse etablert seg som en sentral kunstner i Haugesund-regionen, med en kunstnerisk praksis som fortsetter å utvikle seg og inspirere.</p>`,
+    en: `<p>Johan Ask Vikse is an established visual artist from Haugesund, Norway, with extensive experience in visual arts and drawing. His work is characterized by a detailed visual expression, often featuring patterns and symbolism that invite contemplation.</p>
+
+<p>Vikse works professionally with art and has been active in the art community for many years. He primarily works with drawing, ink, pencil and acrylic, and has developed a distinctive style that combines technical precision with artistic exploration.</p>
+
+<p>As a member of the Norwegian Association of Illustrators, Norwegian Visual Artists and Haugaland Kunstnerverk, he is an active player in the Norwegian art scene. He was recently awarded an art prize by Haugesund Art Association – an important local professional recognition that acknowledges his contribution to the arts.</p>
+
+<p>Through countless solo exhibitions and group exhibitions, Vikse has established himself as a central artist in the Haugesund region, with an artistic practice that continues to evolve and inspire.</p>`
+};
+
 // Data Manager Object
 const DataManager = {
     // Initialize data from localStorage or use defaults
@@ -195,6 +212,9 @@ const DataManager = {
         }
         if (!localStorage.getItem('siteVersion')) {
             this.setSiteVersion('1.01');
+        }
+        if (!localStorage.getItem('aboutText')) {
+            this.saveAboutText(defaultAboutText);
         }
     },
 
@@ -319,6 +339,23 @@ const DataManager = {
         const newVersion = (currentVersion + 0.01).toFixed(2);
         this.setSiteVersion(newVersion);
         return newVersion;
+    },
+
+    // About text methods
+    getAboutText() {
+        const data = localStorage.getItem('aboutText');
+        return data ? JSON.parse(data) : defaultAboutText;
+    },
+
+    saveAboutText(aboutText) {
+        localStorage.setItem('aboutText', JSON.stringify(aboutText));
+    },
+
+    updateAboutText(language, text) {
+        const aboutText = this.getAboutText();
+        aboutText[language] = text;
+        this.saveAboutText(aboutText);
+        return aboutText;
     }
 };
 
