@@ -486,6 +486,10 @@ function initializeAdminToggle() {
                 document.getElementById('admin-panel').style.display = 'block';
                 document.body.style.overflow = 'hidden';
 
+                // Refresh gallery to show any new artworks
+                loadGallery();
+                loadFeaturedWorks();
+
                 // Initialize admin panel
                 if (window.AdminPanel) {
                     AdminPanel.init();

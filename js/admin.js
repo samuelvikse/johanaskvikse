@@ -49,6 +49,12 @@ const AdminPanel = {
             closeBtn.addEventListener('click', () => {
                 document.getElementById('admin-panel').style.display = 'none';
                 document.body.style.overflow = '';
+
+                // Refresh gallery when closing admin panel to show any changes
+                if (window.MainApp) {
+                    MainApp.loadGallery();
+                    MainApp.loadFeaturedWorks();
+                }
             });
         }
     },
