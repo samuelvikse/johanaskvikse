@@ -211,7 +211,7 @@ const DataManager = {
             this.saveEvents(defaultEvents);
         }
         if (!localStorage.getItem('siteVersion')) {
-            this.setSiteVersion('1.01');
+            this.setSiteVersion('1.03');
         }
         if (!localStorage.getItem('aboutText')) {
             this.saveAboutText(defaultAboutText);
