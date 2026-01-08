@@ -197,31 +197,39 @@ const AdminPanel = {
             return;
         }
 
-        container.innerHTML = artworks.map(artwork => `
-            <div class="admin-item-with-image">
-                <div class="admin-item-thumbnail">
-                    <img src="${artwork.image}" alt="${artwork.title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\'%3E%3Crect fill=\'%23ddd\' width=\'100\' height=\'100\'/%3E%3Ctext fill=\'%23999\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\'%3ENo Image%3C/text%3E%3C/svg%3E'">
-                </div>
-                <div class="admin-item-content">
-                    <div class="admin-item-info">
-                        <h5>${artwork.title} ${artwork.titleEn ? `<span class="subtitle">/ ${artwork.titleEn}</span>` : ''}</h5>
-                        <p class="artwork-meta">
-                            <span class="year">${artwork.year || 'Ingen år'}</span>
-                            ${artwork.featured ? '<span class="featured-badge">★ Fremhevet</span>' : ''}
-                        </p>
-                        <p class="artwork-path">${artwork.image}</p>
+        container.innerHTML = artworks.map(artwork => {
+            // Format image path for display - shorten base64 data
+            let displayPath = artwork.image;
+            if (artwork.image.startsWith('data:')) {
+                displayPath = '[Opplastet bilde]';
+            }
+
+            return `
+                <div class="admin-item-with-image">
+                    <div class="admin-item-thumbnail">
+                        <img src="${artwork.image}" alt="${artwork.title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\'%3E%3Crect fill=\'%23ddd\' width=\'100\' height=\'100\'/%3E%3Ctext fill=\'%23999\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\'%3ENo Image%3C/text%3E%3C/svg%3E'">
                     </div>
-                    <div class="admin-item-actions">
-                        <button class="edit-btn" onclick="AdminPanel.editArtwork(${artwork.id})">
-                            ${this.getTranslation('Rediger', 'Edit')}
-                        </button>
-                        <button class="delete-btn" onclick="AdminPanel.deleteArtwork(${artwork.id})">
-                            ${this.getTranslation('Slett', 'Delete')}
-                        </button>
+                    <div class="admin-item-content">
+                        <div class="admin-item-info">
+                            <h5>${artwork.title} ${artwork.titleEn ? `<span class="subtitle">/ ${artwork.titleEn}</span>` : ''}</h5>
+                            <p class="artwork-meta">
+                                <span class="year">${artwork.year || 'Ingen år'}</span>
+                                ${artwork.featured ? '<span class="featured-badge">★ Fremhevet</span>' : ''}
+                            </p>
+                            <p class="artwork-path">${displayPath}</p>
+                        </div>
+                        <div class="admin-item-actions">
+                            <button class="edit-btn" onclick="AdminPanel.editArtwork(${artwork.id})">
+                                ${this.getTranslation('Rediger', 'Edit')}
+                            </button>
+                            <button class="delete-btn" onclick="AdminPanel.deleteArtwork(${artwork.id})">
+                                ${this.getTranslation('Slett', 'Delete')}
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     },
 
     editArtwork(id) {
