@@ -155,12 +155,25 @@ const AdminPanel = {
             return;
         }
 
+        // Get form values with defaults for empty fields
+        const titleValue = document.getElementById('artwork-title').value.trim();
+        const titleEnValue = document.getElementById('artwork-title-en').value.trim();
+        const yearValue = document.getElementById('artwork-year').value;
+        const descValue = document.getElementById('artwork-description').value.trim();
+        const descEnValue = document.getElementById('artwork-description-en').value.trim();
+
+        // Generate default title if empty
+        const artworks = DataManager.getArtworks();
+        const nextNumber = artworks.length + 1;
+        const defaultTitle = `Kunstverk ${nextNumber}`;
+        const defaultTitleEn = `Artwork ${nextNumber}`;
+
         const artwork = {
-            title: document.getElementById('artwork-title').value,
-            titleEn: document.getElementById('artwork-title-en').value,
-            year: document.getElementById('artwork-year').value ? parseInt(document.getElementById('artwork-year').value) : null,
-            description: document.getElementById('artwork-description').value,
-            descriptionEn: document.getElementById('artwork-description-en').value,
+            title: titleValue || defaultTitle,
+            titleEn: titleEnValue || defaultTitleEn,
+            year: yearValue ? parseInt(yearValue) : new Date().getFullYear(),
+            description: descValue || 'Nytt verk',
+            descriptionEn: descEnValue || 'New artwork',
             image: imageData,
             featured: document.getElementById('artwork-featured').checked
         };
@@ -189,6 +202,9 @@ const AdminPanel = {
             MainApp.loadGallery();
             MainApp.loadFeaturedWorks();
         }
+
+        // Show premium success modal
+        this.showSuccessModal('artwork', artwork);
     },
 
 
@@ -335,13 +351,26 @@ const AdminPanel = {
 
     saveEvent() {
         const id = document.getElementById('event-id').value;
+
+        // Get values with defaults
+        const titleValue = document.getElementById('event-title').value.trim();
+        const dateValue = document.getElementById('event-date').value;
+        const locationValue = document.getElementById('event-location').value.trim();
+
+        // Require at least a date for events
+        if (!dateValue) {
+            const lang = window.MainApp ? MainApp.currentLanguage() : 'no';
+            alert(lang === 'en' ? 'Please select a date' : 'Vennligst velg en dato');
+            return;
+        }
+
         const event = {
-            title: document.getElementById('event-title').value,
-            titleEn: document.getElementById('event-title-en').value,
-            date: document.getElementById('event-date').value,
-            location: document.getElementById('event-location').value,
-            description: document.getElementById('event-description').value,
-            descriptionEn: document.getElementById('event-description-en').value
+            title: titleValue || 'Nytt arrangement',
+            titleEn: document.getElementById('event-title-en').value.trim() || 'New event',
+            date: dateValue,
+            location: locationValue || 'Haugesund',
+            description: document.getElementById('event-description').value.trim() || '',
+            descriptionEn: document.getElementById('event-description-en').value.trim() || ''
         };
 
         if (id) {
@@ -364,6 +393,9 @@ const AdminPanel = {
         if (window.MainApp) {
             MainApp.loadEvents();
         }
+
+        // Show premium success modal
+        this.showSuccessModal('event', event);
     },
 
     loadEventsList() {
@@ -546,22 +578,175 @@ const AdminPanel = {
 
         // Log to console for debugging
         console.log(`Git commit queued: ${commitMessage}`);
+    },
 
-        // Show notification
+    showSuccessModal(type, data) {
         const lang = window.MainApp ? MainApp.currentLanguage() : 'no';
-        const notificationText = lang === 'en'
-            ? `Changes saved! Version ${DataManager.getSiteVersion()}`
-            : `Endringer lagret! Versjon ${DataManager.getSiteVersion()}`;
 
-        // Create temporary notification
-        const notification = document.createElement('div');
-        notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #8b7355; color: white; padding: 1rem 1.5rem; border-radius: 4px; z-index: 10000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);';
-        notification.textContent = notificationText;
-        document.body.appendChild(notification);
+        // Remove any existing modal
+        const existingModal = document.getElementById('success-modal');
+        if (existingModal) existingModal.remove();
 
+        // Create modal overlay
+        const modal = document.createElement('div');
+        modal.id = 'success-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        `;
+
+        // Determine content based on type
+        let title, subtitle, imageHtml;
+
+        if (type === 'artwork') {
+            title = lang === 'en' ? 'Artwork Added!' : 'Kunstverk lagt til!';
+            subtitle = data.title + (data.titleEn && data.titleEn !== data.title ? ` / ${data.titleEn}` : '');
+            imageHtml = data.image ? `<img src="${data.image}" alt="${data.title}" style="max-width: 200px; max-height: 200px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); margin-bottom: 1.5rem;">` : '';
+        } else if (type === 'event') {
+            title = lang === 'en' ? 'Event Added!' : 'Arrangement lagt til!';
+            subtitle = data.title;
+            imageHtml = '<div style="font-size: 4rem; margin-bottom: 1rem;">📅</div>';
+        }
+
+        modal.innerHTML = `
+            <div class="success-modal-content" style="
+                background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+                border-radius: 24px;
+                padding: 3rem;
+                text-align: center;
+                max-width: 400px;
+                width: 90%;
+                box-shadow: 0 25px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(201, 169, 98, 0.3);
+                transform: scale(0.8) translateY(20px);
+                transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+                position: relative;
+                overflow: hidden;
+            ">
+                <div style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 4px;
+                    background: linear-gradient(90deg, #c9a962, #8b7355, #c9a962);
+                "></div>
+
+                <div class="success-checkmark" style="
+                    width: 80px;
+                    height: 80px;
+                    margin: 0 auto 1.5rem;
+                    background: linear-gradient(145deg, #4CAF50, #45a049);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+                    animation: checkmarkPulse 0.6s ease;
+                ">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+
+                <h2 style="
+                    color: #c9a962;
+                    font-size: 1.8rem;
+                    margin-bottom: 0.5rem;
+                    font-weight: 600;
+                ">${title}</h2>
+
+                <p style="
+                    color: #aaa;
+                    font-size: 1.1rem;
+                    margin-bottom: 1.5rem;
+                ">${subtitle}</p>
+
+                ${imageHtml}
+
+                <div style="
+                    display: flex;
+                    gap: 0.5rem;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    margin-bottom: 2rem;
+                ">
+                    ${data.year ? `<span style="background: rgba(201, 169, 98, 0.2); color: #c9a962; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.85rem;">${data.year}</span>` : ''}
+                    ${data.featured ? `<span style="background: rgba(76, 175, 80, 0.2); color: #4CAF50; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.85rem;">★ ${lang === 'en' ? 'Featured' : 'Fremhevet'}</span>` : ''}
+                </div>
+
+                <button id="success-modal-close" style="
+                    background: linear-gradient(145deg, #c9a962, #a08b6d);
+                    color: #1a1a1a;
+                    border: none;
+                    padding: 1rem 2.5rem;
+                    border-radius: 30px;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(201, 169, 98, 0.3);
+                ">${lang === 'en' ? 'Continue' : 'Fortsett'}</button>
+
+                <p style="
+                    color: #666;
+                    font-size: 0.8rem;
+                    margin-top: 1.5rem;
+                ">v${DataManager.getSiteVersion()}</p>
+            </div>
+
+            <style>
+                @keyframes checkmarkPulse {
+                    0% { transform: scale(0); opacity: 0; }
+                    50% { transform: scale(1.2); }
+                    100% { transform: scale(1); opacity: 1; }
+                }
+                #success-modal-close:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(201, 169, 98, 0.4);
+                }
+            </style>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Trigger animation
+        requestAnimationFrame(() => {
+            modal.style.opacity = '1';
+            modal.querySelector('.success-modal-content').style.transform = 'scale(1) translateY(0)';
+        });
+
+        // Close button
+        const closeBtn = document.getElementById('success-modal-close');
+        closeBtn.addEventListener('click', () => {
+            modal.style.opacity = '0';
+            modal.querySelector('.success-modal-content').style.transform = 'scale(0.8) translateY(20px)';
+            setTimeout(() => modal.remove(), 300);
+        });
+
+        // Close on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeBtn.click();
+            }
+        });
+
+        // Auto-close after 5 seconds
         setTimeout(() => {
-            notification.remove();
-        }, 3000);
+            if (document.getElementById('success-modal')) {
+                closeBtn.click();
+            }
+        }, 5000);
     }
 };
 

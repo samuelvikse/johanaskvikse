@@ -212,8 +212,8 @@ const DataManager = {
         }
         // Always update to latest version
         const currentVersion = this.getSiteVersion();
-        if (currentVersion !== '1.06') {
-            this.setSiteVersion('1.06');
+        if (currentVersion !== '1.07') {
+            this.setSiteVersion('1.07');
         }
         if (!localStorage.getItem('aboutText')) {
             this.saveAboutText(defaultAboutText);
