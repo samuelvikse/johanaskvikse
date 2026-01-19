@@ -12,11 +12,14 @@
     --color-primary: #1a1a1a;
     --color-secondary: #2d2d2d;
     --color-accent: #8b7355;
+    --color-accent-light: #a08b6d;
+    --color-accent-glow: rgba(139, 115, 85, 0.4);
     --color-text: #333333;
     --color-text-light: #666666;
     --color-bg: #ffffff;
     --color-bg-alt: #f8f8f8;
     --color-border: #e0e0e0;
+    --color-gold: #c9a962;
 
     /* Typography */
     --font-serif: 'Cormorant Garamond', serif;
@@ -33,6 +36,7 @@
     --transition-fast: 0.2s ease;
     --transition-medium: 0.3s ease;
     --transition-slow: 0.5s ease;
+    --transition-bounce: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 html {
@@ -285,6 +289,20 @@ a:hover {
     z-index: 1;
 }
 
+/* Animated grain overlay for artistic texture */
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.03;
+    z-index: 2;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
 .hero-content {
     position: relative;
     z-index: 3;
@@ -350,7 +368,7 @@ a:hover {
     font-weight: 500;
     letter-spacing: 1px;
     text-transform: uppercase;
-    transition: var(--transition-medium);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(5px);
     position: relative;
     overflow: hidden;
@@ -363,7 +381,7 @@ a:hover {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
     transition: left 0.6s;
 }
 
@@ -374,23 +392,29 @@ a:hover {
 .cta-primary {
     background: white;
     color: var(--color-primary);
+    border-color: white;
 }
 
 .cta-primary:hover {
-    background: rgba(255, 255, 255, 0.9);
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    background: var(--color-gold);
+    border-color: var(--color-gold);
+    color: white;
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(201, 169, 98, 0.4);
 }
 
 .cta-secondary {
-    background: rgba(255, 255, 255, 0.1);
+    background: transparent;
     color: white;
+    border: 2px solid rgba(255, 255, 255, 0.6);
 }
 
 .cta-secondary:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    background: white;
+    color: var(--color-primary);
+    border-color: white;
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(255, 255, 255, 0.2);
 }
 
 /* ============================================
@@ -420,7 +444,18 @@ section {
     transform: translateX(-50%);
     width: 80px;
     height: 2px;
-    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+    background: linear-gradient(90deg, transparent, var(--color-gold), var(--color-accent), var(--color-gold), transparent);
+}
+
+.section-title::before {
+    content: '✦';
+    position: absolute;
+    bottom: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6rem;
+    color: var(--color-accent);
+    opacity: 0.7;
 }
 
 /* ============================================
@@ -444,9 +479,8 @@ section {
     cursor: pointer;
     background: var(--color-bg);
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-                box-shadow 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 4px;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 8px;
 }
 
 .featured-item::before {
@@ -456,7 +490,10 @@ section {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(139, 115, 85, 0.1), transparent);
+    background: linear-gradient(135deg,
+        rgba(201, 169, 98, 0.1) 0%,
+        rgba(139, 115, 85, 0.3) 50%,
+        rgba(0, 0, 0, 0.5) 100%);
     opacity: 0;
     transition: opacity 0.6s ease;
     z-index: 1;
@@ -467,21 +504,21 @@ section {
 }
 
 .featured-item:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 16px 50px rgba(0,0,0,0.18);
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: 0 30px 60px rgba(139, 115, 85, 0.3);
 }
 
 .featured-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+    transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1),
                 filter 0.6s ease;
 }
 
 .featured-item:hover img {
-    transform: scale(1.08);
-    filter: brightness(1.05);
+    transform: scale(1.12);
+    filter: brightness(1.1) saturate(1.1);
 }
 
 .featured-info {
@@ -532,8 +569,7 @@ section {
     cursor: pointer;
     background: var(--color-bg-alt);
     aspect-ratio: 1;
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 4px;
 }
 
@@ -544,30 +580,53 @@ section {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg,
+        rgba(139, 115, 85, 0.2) 0%,
+        rgba(0, 0, 0, 0.4) 100%);
     opacity: 0;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.5s ease;
     z-index: 1;
+}
+
+.gallery-item::after {
+    content: '🔍';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    font-size: 2rem;
+    z-index: 2;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    filter: grayscale(1) brightness(2);
 }
 
 .gallery-item:hover::before {
     opacity: 1;
 }
 
+.gallery-item:hover::after {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.9;
+}
+
 .gallery-item:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 50px rgba(139, 115, 85, 0.25);
+    z-index: 10;
 }
 
 .gallery-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+                filter 0.5s ease;
 }
 
 .gallery-item:hover img {
-    transform: scale(1.05);
+    transform: scale(1.15);
+    filter: brightness(1.1);
 }
 
 /* ============================================
@@ -691,12 +750,15 @@ section {
     padding: var(--spacing-md);
     background: var(--color-bg-alt);
     border-left: 3px solid transparent;
-    transition: var(--transition-fast);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 0 8px 8px 0;
 }
 
 .event-item:hover {
-    border-left-color: var(--color-accent);
-    transform: translateX(5px);
+    border-left-color: var(--color-gold);
+    transform: translateX(8px);
+    background: white;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 }
 
 .event-date {
@@ -834,12 +896,31 @@ section {
     text-transform: uppercase;
     letter-spacing: 1px;
     cursor: pointer;
-    transition: var(--transition-medium);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.submit-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.submit-button:hover::before {
+    left: 100%;
 }
 
 .submit-button:hover {
-    background: transparent;
-    color: var(--color-primary);
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(139, 115, 85, 0.3);
 }
 
 .form-message {
@@ -869,11 +950,21 @@ section {
    FOOTER
    ============================================ */
 .main-footer {
-    background: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
     color: white;
     padding: var(--spacing-lg) 0;
     text-align: center;
     position: relative;
+}
+
+.main-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
 }
 
 .main-footer .container {
@@ -1112,13 +1203,39 @@ section {
     top: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.95);
+    background: rgba(10, 10, 10, 0.97);
     align-items: center;
     justify-content: center;
+    backdrop-filter: blur(10px);
 }
 
 .lightbox.active {
     display: flex;
+    animation: lightboxOpen 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes lightboxOpen {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.lightbox.active .lightbox-image-container img {
+    animation: lightboxImageIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both;
+}
+
+@keyframes lightboxImageIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .lightbox-close {
@@ -1178,18 +1295,27 @@ section {
 }
 
 .lightbox-nav {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: white;
-    font-size: 3rem;
+    font-size: 2.5rem;
     padding: 1rem 1.5rem;
     cursor: pointer;
-    transition: var(--transition-fast);
-    backdrop-filter: blur(5px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .lightbox-nav:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    transform: scale(1.1);
+    box-shadow: 0 0 30px var(--color-accent-glow);
 }
 
 .lightbox-nav.prev {
