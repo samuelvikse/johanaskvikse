@@ -1426,7 +1426,6 @@ section {
     padding: 1rem 1.25rem;
     background: var(--color-bg-alt);
     margin-bottom: 0.75rem;
-    border-left: 3px solid var(--color-accent);
     border-radius: 6px;
     border: 1px solid var(--color-border);
     border-left: 3px solid var(--color-accent);
@@ -1618,90 +1617,6 @@ section {
 .slide-in-right.visible {
     opacity: 1;
     transform: translateX(0);
-}
-
-/* Scale up animation */
-.scale-up {
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-                transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.scale-up.visible {
-    opacity: 1;
-    transform: scale(1);
-}
-
-/* Parallax effect for images */
-.parallax-image {
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Smooth hover lift effect */
-.hover-lift {
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.hover-lift:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-}
-
-/* Luxury shimmer effect */
-@keyframes shimmer {
-    0% {
-        background-position: -1000px 0;
-    }
-    100% {
-        background-position: 1000px 0;
-    }
-}
-
-.shimmer-effect {
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(139, 115, 85, 0.1),
-        transparent
-    );
-    background-size: 1000px 100%;
-    animation: shimmer 3s infinite;
-}
-
-/* Text reveal animation */
-@keyframes textReveal {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-        filter: blur(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-        filter: blur(0);
-    }
-}
-
-.text-reveal {
-    animation: textReveal 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-/* Elegant line animation */
-@keyframes lineGrow {
-    from {
-        transform: scaleX(0);
-    }
-    to {
-        transform: scaleX(1);
-    }
-}
-
-.line-grow {
-    transform: scaleX(0);
-    transform-origin: left;
-    animation: lineGrow 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 /* ============================================
