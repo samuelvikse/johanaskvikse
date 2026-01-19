@@ -308,7 +308,7 @@
                     <div class="form-group">
                         <label for="artwork-image-file" data-no="Last opp bilde" data-en="Upload Image">Last opp bilde</label>
                         <input type="file" id="artwork-image-file" accept="image/*" style="margin-bottom: 0.5rem;">
-                        <div id="image-preview" style="margin-top: 0.5rem;"></div>
+                        <div id="image-preview" style="margin-top: 0.5rem; max-width: 200px; max-height: 200px; overflow: hidden;"></div>
                         <p id="upload-instruction" style="font-size: 0.85rem; margin-top: 0.5rem; color: #666;"></p>
                         <input type="hidden" id="artwork-image" name="image">
                     </div>
@@ -318,8 +318,10 @@
                             <span data-no="Fremhevet verk" data-en="Featured work">Fremhevet verk</span>
                         </label>
                     </div>
-                    <button type="submit" data-no="Lagre kunstverk" data-en="Save Artwork">Lagre kunstverk</button>
-                    <button type="button" id="cancel-artwork" data-no="Avbryt" data-en="Cancel">Avbryt</button>
+                    <div class="form-buttons" style="margin-top: 1.5rem; position: relative; z-index: 10;">
+                        <button type="submit" data-no="Lagre kunstverk" data-en="Save Artwork">Lagre kunstverk</button>
+                        <button type="button" id="cancel-artwork" data-no="Avbryt" data-en="Cancel">Avbryt</button>
+                    </div>
                 </form>
 
                 <div class="admin-list">

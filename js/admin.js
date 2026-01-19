@@ -111,7 +111,7 @@ const AdminPanel = {
         reader.onload = (e) => {
             // Show preview
             if (previewElement) {
-                previewElement.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 4px;">`;
+                previewElement.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width: 100%; max-height: 200px; width: auto; height: auto; border-radius: 4px; display: block;">`;
             }
 
             // Store the base64 data directly
