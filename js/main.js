@@ -14,21 +14,48 @@ let currentLightboxIndex = 0;
 let currentGalleryItems = [];
 
 // Initialize on DOM load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     initializeLanguage();
     initializeNavigation();
     initializeHamburgerMenu();
     initializeScrollHeader();
-    loadFeaturedWorks();
-    loadGallery();
-    loadEvents();
-    loadAboutText();
+    
+    // Initialize Firebase and load data
+    await initializeFirebaseAndLoadData();
+    
     initializeLightbox();
     initializeContactForm();
     initializeAdminToggle();
     setCurrentYear();
     setSiteVersion();
 });
+
+// Initialize Firebase and set up real-time listeners
+async function initializeFirebaseAndLoadData() {
+    // Wait for Firebase to initialize
+    if (typeof FirebaseDataManager !== 'undefined') {
+        await FirebaseDataManager.init();
+        
+        // Set up listener for real-time updates
+        FirebaseDataManager.addListener((type) => {
+            console.log('Data updated:', type);
+            if (type === 'artworks') {
+                loadFeaturedWorks();
+                loadGallery();
+            } else if (type === 'events') {
+                loadEvents();
+            } else if (type === 'aboutText') {
+                loadAboutText();
+            }
+        });
+    }
+    
+    // Load initial data
+    await loadFeaturedWorks();
+    await loadGallery();
+    await loadEvents();
+    await loadAboutText();
+}
 
 // Reload featured works on window resize to handle mobile/desktop switch
 let resizeTimer;
@@ -184,11 +211,17 @@ function initializeHamburgerMenu() {
 /**
  * GALLERY FUNCTIONALITY
  */
-function loadFeaturedWorks() {
+async function loadFeaturedWorks() {
     const container = document.getElementById('featured-works');
     if (!container) return;
 
-    let featured = DataManager.getFeaturedArtworks();
+    // Use Firebase if available, otherwise fall back to DataManager
+    let featured;
+    if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+        featured = await FirebaseDataManager.getFeaturedArtworks();
+    } else {
+        featured = DataManager.getFeaturedArtworks();
+    }
 
     // On mobile (screen width <= 768px), show only 1 featured work
     const isMobile = window.innerWidth <= 768;
@@ -219,11 +252,17 @@ function loadFeaturedWorks() {
     });
 }
 
-function loadGallery() {
+async function loadGallery() {
     const container = document.getElementById('gallery-grid');
     if (!container) return;
 
-    const artworks = DataManager.getArtworks();
+    // Use Firebase if available, otherwise fall back to DataManager
+    let artworks;
+    if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+        artworks = await FirebaseDataManager.getArtworks();
+    } else {
+        artworks = DataManager.getArtworks();
+    }
     currentGalleryItems = artworks;
 
     container.innerHTML = artworks.map(artwork => {
@@ -283,12 +322,19 @@ function initializeLightbox() {
     });
 }
 
-function openLightbox(artworkId) {
-    const artwork = DataManager.getArtworkById(artworkId);
+async function openLightbox(artworkId) {
+    // Use Firebase if available, otherwise fall back to DataManager
+    let artwork, artworks;
+    if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+        artwork = await FirebaseDataManager.getArtworkById(artworkId);
+        artworks = await FirebaseDataManager.getArtworks();
+    } else {
+        artwork = DataManager.getArtworkById(artworkId);
+        artworks = DataManager.getArtworks();
+    }
     if (!artwork) return;
 
     const lightbox = document.getElementById('lightbox');
-    const artworks = DataManager.getArtworks();
     currentLightboxIndex = artworks.findIndex(a => a.id === parseInt(artworkId));
 
     updateLightboxContent(artwork);
@@ -302,8 +348,14 @@ function closeLightbox() {
     document.body.style.overflow = '';
 }
 
-function navigateLightbox(direction) {
-    const artworks = DataManager.getArtworks();
+async function navigateLightbox(direction) {
+    // Use Firebase if available, otherwise fall back to DataManager
+    let artworks;
+    if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+        artworks = await FirebaseDataManager.getArtworks();
+    } else {
+        artworks = DataManager.getArtworks();
+    }
     currentLightboxIndex = (currentLightboxIndex + direction + artworks.length) % artworks.length;
     updateLightboxContent(artworks[currentLightboxIndex]);
 }
@@ -322,11 +374,17 @@ function updateLightboxContent(artwork) {
 /**
  * EVENTS FUNCTIONALITY
  */
-function loadEvents() {
+async function loadEvents() {
     const upcomingContainer = document.getElementById('upcoming-events');
     if (!upcomingContainer) return;
 
-    const upcomingEvents = DataManager.getUpcomingEvents();
+    // Use Firebase if available, otherwise fall back to DataManager
+    let upcomingEvents;
+    if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+        upcomingEvents = await FirebaseDataManager.getUpcomingEvents();
+    } else {
+        upcomingEvents = DataManager.getUpcomingEvents();
+    }
 
     if (upcomingEvents.length === 0) {
         const noEventsText = currentLanguage === 'en' ? 'No upcoming events at the moment.' : 'Ingen kommende events for øyeblikket.';
@@ -364,8 +422,14 @@ function formatEventDate(dateString) {
 /**
  * ABOUT TEXT LOADING
  */
-function loadAboutText() {
-    const aboutText = DataManager.getAboutText();
+async function loadAboutText() {
+    // Use Firebase if available, otherwise fall back to DataManager
+    let aboutText;
+    if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+        aboutText = await FirebaseDataManager.getAboutText();
+    } else {
+        aboutText = DataManager.getAboutText();
+    }
 
     const noElement = document.getElementById('about-text-no');
     const enElement = document.getElementById('about-text-en');

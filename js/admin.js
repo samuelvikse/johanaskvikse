@@ -7,15 +7,15 @@ const AdminPanel = {
     currentEditingArtwork: null,
     currentEditingEvent: null,
 
-    init() {
+    async init() {
         this.initializeTabs();
         this.initializeArtworkForm();
         this.initializeEventForm();
         this.initializeAboutForm();
         this.initializeCloseButton();
-        this.loadArtworksList();
-        this.loadEventsList();
-        this.loadAboutText();
+        await this.loadArtworksList();
+        await this.loadEventsList();
+        await this.loadAboutText();
     },
 
     /**
@@ -100,41 +100,111 @@ const AdminPanel = {
             return;
         }
 
-        // Validate file size (max 5MB for localStorage limits)
-        if (file.size > 5 * 1024 * 1024) {
+        // Validate file size (max 20MB original)
+        if (file.size > 20 * 1024 * 1024) {
             const lang = window.MainApp ? MainApp.currentLanguage() : 'no';
-            alert(lang === 'en' ? 'Image is too large. Maximum size is 5MB.' : 'Bildet er for stort. Maks størrelse er 5MB.');
+            alert(lang === 'en' ? 'Image is too large. Maximum size is 20MB.' : 'Bildet er for stort. Maks størrelse er 20MB.');
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
+        const lang = window.MainApp ? MainApp.currentLanguage() : 'no';
+        const instruction = document.getElementById('upload-instruction');
+        if (instruction) {
+            instruction.textContent = lang === 'en' ? 'Compressing image...' : 'Komprimerer bilde...';
+            instruction.style.color = '#666';
+        }
+
+        // Compress and resize image
+        this.compressImage(file, 1200, 0.8).then((compressedBase64) => {
             // Show preview
             if (previewElement) {
-                previewElement.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width: 100%; max-height: 200px; width: auto; height: auto; border-radius: 4px; display: block;">`;
+                previewElement.innerHTML = `<img src="${compressedBase64}" alt="Preview" style="max-width: 100%; max-height: 200px; width: auto; height: auto; border-radius: 4px; display: block;">`;
             }
 
-            // Store the base64 data directly
-            this.pendingImageData = e.target.result;
+            // Store the compressed base64 data
+            this.pendingImageData = compressedBase64;
 
             // Set the image field to indicate an image is ready
             document.getElementById('artwork-image').value = 'base64-data-uploaded';
 
-            // Show success message to user
-            const instruction = document.getElementById('upload-instruction');
+            // Show success message with size info
+            const sizeKB = Math.round(compressedBase64.length * 0.75 / 1024);
             if (instruction) {
-                const lang = window.MainApp ? MainApp.currentLanguage() : 'no';
                 instruction.textContent = lang === 'en'
-                    ? '✓ Image ready to save'
-                    : '✓ Bilde klar til lagring';
+                    ? `✓ Image ready (${sizeKB} KB)`
+                    : `✓ Bilde klar (${sizeKB} KB)`;
                 instruction.style.color = '#4CAF50';
                 instruction.style.fontWeight = '600';
             }
-        };
-        reader.readAsDataURL(file);
+        }).catch((error) => {
+            console.error('Image compression error:', error);
+            if (instruction) {
+                instruction.textContent = lang === 'en' ? 'Error compressing image' : 'Feil ved komprimering';
+                instruction.style.color = '#f44336';
+            }
+        });
     },
 
-    saveArtwork() {
+    // Compress and resize image to fit within maxSize and target file size
+    compressImage(file, maxDimension = 1200, quality = 0.8) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let { width, height } = img;
+
+                    // Calculate new dimensions while maintaining aspect ratio
+                    if (width > height) {
+                        if (width > maxDimension) {
+                            height = Math.round((height * maxDimension) / width);
+                            width = maxDimension;
+                        }
+                    } else {
+                        if (height > maxDimension) {
+                            width = Math.round((width * maxDimension) / height);
+                            height = maxDimension;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Try to get under 900KB (leaving buffer for Firestore 1MB limit)
+                    let currentQuality = quality;
+                    let result = canvas.toDataURL('image/jpeg', currentQuality);
+                    
+                    // Reduce quality if still too large
+                    while (result.length > 900000 && currentQuality > 0.3) {
+                        currentQuality -= 0.1;
+                        result = canvas.toDataURL('image/jpeg', currentQuality);
+                    }
+
+                    // If still too large, reduce dimensions
+                    if (result.length > 900000) {
+                        const scaleFactor = Math.sqrt(900000 / result.length);
+                        canvas.width = Math.round(width * scaleFactor);
+                        canvas.height = Math.round(height * scaleFactor);
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        result = canvas.toDataURL('image/jpeg', 0.7);
+                    }
+
+                    console.log(`Image compressed: ${Math.round(result.length * 0.75 / 1024)} KB`);
+                    resolve(result);
+                };
+                img.onerror = reject;
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    },
+
+    async saveArtwork() {
         const id = document.getElementById('artwork-id').value;
         const imageValue = document.getElementById('artwork-image').value;
 
@@ -144,7 +214,12 @@ const AdminPanel = {
             imageData = this.pendingImageData;
         } else if (id) {
             // If editing and no new image, keep the existing image
-            const existingArtwork = DataManager.getArtworkById(id);
+            let existingArtwork;
+            if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+                existingArtwork = await FirebaseDataManager.getArtworkById(id);
+            } else {
+                existingArtwork = DataManager.getArtworkById(id);
+            }
             if (existingArtwork) {
                 imageData = existingArtwork.image;
             }
@@ -178,12 +253,19 @@ const AdminPanel = {
             featured: document.getElementById('artwork-featured').checked
         };
 
-        if (id) {
-            // Update existing
-            DataManager.updateArtwork(id, artwork);
+        // Use Firebase if available, otherwise fall back to DataManager
+        if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+            if (id) {
+                await FirebaseDataManager.updateArtwork(id, artwork);
+            } else {
+                await FirebaseDataManager.addArtwork(artwork);
+            }
         } else {
-            // Add new
-            DataManager.addArtwork(artwork);
+            if (id) {
+                DataManager.updateArtwork(id, artwork);
+            } else {
+                DataManager.addArtwork(artwork);
+            }
         }
 
         // Clear pending image data
@@ -195,7 +277,7 @@ const AdminPanel = {
         this.gitCommitAndPush(`Update artwork - v${newVersion}`);
 
         this.resetArtworkForm();
-        this.loadArtworksList();
+        await this.loadArtworksList();
 
         // Reload gallery on main page
         if (window.MainApp) {
@@ -208,11 +290,17 @@ const AdminPanel = {
     },
 
 
-    loadArtworksList() {
+    async loadArtworksList() {
         const container = document.getElementById('artworks-list');
         if (!container) return;
 
-        const artworks = DataManager.getArtworks();
+        // Use Firebase if available, otherwise fall back to DataManager
+        let artworks;
+        if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+            artworks = await FirebaseDataManager.getArtworks();
+        } else {
+            artworks = DataManager.getArtworks();
+        }
 
         if (artworks.length === 0) {
             container.innerHTML = '<p style="padding: 1rem; color: #666;">Ingen kunstverk ennå.</p>';
@@ -254,8 +342,14 @@ const AdminPanel = {
         }).join('');
     },
 
-    editArtwork(id) {
-        const artwork = DataManager.getArtworkById(id);
+    async editArtwork(id) {
+        // Use Firebase if available, otherwise fall back to DataManager
+        let artwork;
+        if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+            artwork = await FirebaseDataManager.getArtworkById(id);
+        } else {
+            artwork = DataManager.getArtworkById(id);
+        }
         if (!artwork) return;
 
         document.getElementById('artwork-id').value = artwork.id;
@@ -288,21 +382,26 @@ const AdminPanel = {
         document.getElementById('artwork-form').scrollIntoView({ behavior: 'smooth' });
     },
 
-    deleteArtwork(id) {
+    async deleteArtwork(id) {
         const confirmText = this.getTranslation(
             'Er du sikker på at du vil slette dette kunstverket?',
             'Are you sure you want to delete this artwork?'
         );
 
         if (confirm(confirmText)) {
-            DataManager.deleteArtwork(id);
+            // Use Firebase if available, otherwise fall back to DataManager
+            if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+                await FirebaseDataManager.deleteArtwork(id);
+            } else {
+                DataManager.deleteArtwork(id);
+            }
 
             // Increment version and trigger git push
             const newVersion = DataManager.incrementVersion();
             this.updateVersionDisplay();
             this.gitCommitAndPush(`Delete artwork - v${newVersion}`);
 
-            this.loadArtworksList();
+            await this.loadArtworksList();
 
             // Reload gallery on main page
             if (window.MainApp) {
@@ -349,7 +448,7 @@ const AdminPanel = {
         }
     },
 
-    saveEvent() {
+    async saveEvent() {
         const id = document.getElementById('event-id').value;
 
         // Get values with defaults
@@ -373,12 +472,19 @@ const AdminPanel = {
             descriptionEn: document.getElementById('event-description-en').value.trim() || ''
         };
 
-        if (id) {
-            // Update existing
-            DataManager.updateEvent(id, event);
+        // Use Firebase if available, otherwise fall back to DataManager
+        if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+            if (id) {
+                await FirebaseDataManager.updateEvent(id, event);
+            } else {
+                await FirebaseDataManager.addEvent(event);
+            }
         } else {
-            // Add new
-            DataManager.addEvent(event);
+            if (id) {
+                DataManager.updateEvent(id, event);
+            } else {
+                DataManager.addEvent(event);
+            }
         }
 
         // Increment version and trigger git push
@@ -387,7 +493,7 @@ const AdminPanel = {
         this.gitCommitAndPush(`Update event - v${newVersion}`);
 
         this.resetEventForm();
-        this.loadEventsList();
+        await this.loadEventsList();
 
         // Reload events on main page
         if (window.MainApp) {
@@ -398,11 +504,17 @@ const AdminPanel = {
         this.showSuccessModal('event', event);
     },
 
-    loadEventsList() {
+    async loadEventsList() {
         const container = document.getElementById('events-list');
         if (!container) return;
 
-        const events = DataManager.getUpcomingEvents();
+        // Use Firebase if available, otherwise fall back to DataManager
+        let events;
+        if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+            events = await FirebaseDataManager.getUpcomingEvents();
+        } else {
+            events = DataManager.getUpcomingEvents();
+        }
 
         if (events.length === 0) {
             container.innerHTML = '<p style="padding: 1rem; color: #666;">Ingen kommende events.</p>';
@@ -435,8 +547,14 @@ const AdminPanel = {
         }).join('');
     },
 
-    editEvent(id) {
-        const event = DataManager.getEventById(id);
+    async editEvent(id) {
+        // Use Firebase if available, otherwise fall back to DataManager
+        let event;
+        if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+            event = await FirebaseDataManager.getEventById(id);
+        } else {
+            event = DataManager.getEventById(id);
+        }
         if (!event) return;
 
         document.getElementById('event-id').value = event.id;
@@ -451,21 +569,26 @@ const AdminPanel = {
         document.getElementById('event-form').scrollIntoView({ behavior: 'smooth' });
     },
 
-    deleteEvent(id) {
+    async deleteEvent(id) {
         const confirmText = this.getTranslation(
             'Er du sikker på at du vil slette dette eventet?',
             'Are you sure you want to delete this event?'
         );
 
         if (confirm(confirmText)) {
-            DataManager.deleteEvent(id);
+            // Use Firebase if available, otherwise fall back to DataManager
+            if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+                await FirebaseDataManager.deleteEvent(id);
+            } else {
+                DataManager.deleteEvent(id);
+            }
 
             // Increment version and trigger git push
             const newVersion = DataManager.incrementVersion();
             this.updateVersionDisplay();
             this.gitCommitAndPush(`Delete event - v${newVersion}`);
 
-            this.loadEventsList();
+            await this.loadEventsList();
 
             // Reload events on main page
             if (window.MainApp) {
@@ -493,8 +616,14 @@ const AdminPanel = {
         }
     },
 
-    loadAboutText() {
-        const aboutText = DataManager.getAboutText();
+    async loadAboutText() {
+        // Use Firebase if available, otherwise fall back to DataManager
+        let aboutText;
+        if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+            aboutText = await FirebaseDataManager.getAboutText();
+        } else {
+            aboutText = DataManager.getAboutText();
+        }
 
         // Load into form if elements exist
         const noInput = document.getElementById('about-text-no-input');
@@ -507,8 +636,14 @@ const AdminPanel = {
         this.updateAboutDisplay();
     },
 
-    updateAboutDisplay() {
-        const aboutText = DataManager.getAboutText();
+    async updateAboutDisplay() {
+        // Use Firebase if available, otherwise fall back to DataManager
+        let aboutText;
+        if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+            aboutText = await FirebaseDataManager.getAboutText();
+        } else {
+            aboutText = DataManager.getAboutText();
+        }
 
         const noElement = document.getElementById('about-text-no');
         const enElement = document.getElementById('about-text-en');
@@ -517,12 +652,18 @@ const AdminPanel = {
         if (enElement) enElement.innerHTML = aboutText.en;
     },
 
-    saveAboutText() {
+    async saveAboutText() {
         const noText = document.getElementById('about-text-no-input').value;
         const enText = document.getElementById('about-text-en-input').value;
 
-        DataManager.updateAboutText('no', noText);
-        DataManager.updateAboutText('en', enText);
+        // Use Firebase if available, otherwise fall back to DataManager
+        if (typeof FirebaseDataManager !== 'undefined' && FirebaseDataManager.isInitialized) {
+            await FirebaseDataManager.updateAboutText('no', noText);
+            await FirebaseDataManager.updateAboutText('en', enText);
+        } else {
+            DataManager.updateAboutText('no', noText);
+            DataManager.updateAboutText('en', enText);
+        }
 
         // Increment version and trigger git push
         const newVersion = DataManager.incrementVersion();
