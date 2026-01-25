@@ -29,16 +29,76 @@ const firebaseConfig = {
     measurementId: "G-SK8L9Y7409"
 };
 
-// Initialize Firebase (uten Storage - bruker base64 i Firestore)
-let app, db;
+// Initialize Firebase (Firestore + Auth)
+let app, db, auth;
 
 try {
     app = firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
-    console.log('Firebase initialized successfully (Firestore only)');
+    auth = firebase.auth();
+    console.log('Firebase initialized successfully (Firestore + Auth)');
 } catch (error) {
     console.error('Firebase initialization error:', error);
 }
+
+// Firebase Authentication Manager
+const FirebaseAuth = {
+    currentUser: null,
+    authStateListeners: [],
+
+    // Sign in with email and password
+    async signIn(email, password) {
+        try {
+            const userCredential = await auth.signInWithEmailAndPassword(email, password);
+            this.currentUser = userCredential.user;
+            return { success: true, user: userCredential.user };
+        } catch (error) {
+            console.error('Sign in error:', error);
+            return { success: false, error: error.code, message: this.getErrorMessage(error.code) };
+        }
+    },
+
+    // Sign out
+    async signOut() {
+        try {
+            await auth.signOut();
+            this.currentUser = null;
+            return { success: true };
+        } catch (error) {
+            console.error('Sign out error:', error);
+            return { success: false, error: error.code };
+        }
+    },
+
+    // Check if user is logged in
+    isLoggedIn() {
+        return this.currentUser !== null;
+    },
+
+    // Add auth state listener
+    onAuthStateChanged(callback) {
+        this.authStateListeners.push(callback);
+        // Also register with Firebase
+        auth.onAuthStateChanged((user) => {
+            this.currentUser = user;
+            this.authStateListeners.forEach(cb => cb(user));
+        });
+    },
+
+    // Get user-friendly error message
+    getErrorMessage(errorCode) {
+        const messages = {
+            'auth/invalid-email': { no: 'Ugyldig e-postadresse', en: 'Invalid email address' },
+            'auth/user-disabled': { no: 'Denne kontoen er deaktivert', en: 'This account has been disabled' },
+            'auth/user-not-found': { no: 'Ingen bruker funnet med denne e-posten', en: 'No user found with this email' },
+            'auth/wrong-password': { no: 'Feil passord', en: 'Incorrect password' },
+            'auth/invalid-credential': { no: 'Feil e-post eller passord', en: 'Incorrect email or password' },
+            'auth/too-many-requests': { no: 'For mange forsøk. Prøv igjen senere', en: 'Too many attempts. Please try again later' },
+            'auth/network-request-failed': { no: 'Nettverksfeil. Sjekk internettforbindelsen', en: 'Network error. Check your internet connection' }
+        };
+        return messages[errorCode] || { no: 'Innlogging feilet', en: 'Login failed' };
+    }
+};
 
 // Firebase Data Manager - erstatter localStorage med Firebase
 const FirebaseDataManager = {
@@ -481,10 +541,6 @@ const FirebaseDataManager = {
     },
 
     // ==================== UTILITY ====================
-
-    checkPassword(password) {
-        return DataManager.checkPassword(password);
-    },
 
     getSiteVersion() {
         return DataManager.getSiteVersion();

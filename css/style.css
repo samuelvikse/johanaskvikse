@@ -1393,6 +1393,36 @@ section {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
+.admin-header-buttons {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.admin-logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(220, 53, 69, 0.2);
+    color: #ff6b6b;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50px;
+    backdrop-filter: blur(10px);
+}
+
+.admin-logout-btn:hover {
+    background: #dc3545;
+    color: white;
+    border-color: #dc3545;
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+}
+
 .admin-tabs {
     display: flex;
     gap: 0;
@@ -2094,6 +2124,17 @@ section {
 
     .admin-header h2 {
         font-size: 1.75rem;
+    }
+
+    .admin-header-buttons {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .admin-logout-btn,
+    .admin-close-btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
     }
 
     .admin-tabs {

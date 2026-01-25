@@ -2,10 +2,10 @@
  * DATA.JS
  * Handles all data storage and retrieval for artworks and events
  * Uses localStorage for persistence
+ *
+ * NOTE: Admin authentication is now handled by Firebase Auth.
+ * See firebase-config.js for authentication setup.
  */
-
-// Default admin passwords (can be changed)
-const ADMIN_PASSWORDS = ['Duekadugruble8/kunst', 'Doffen58??'];
 
 // Initialize default data
 const defaultArtworks = [
@@ -212,8 +212,8 @@ const DataManager = {
         }
         // Always update to latest version
         const currentVersion = this.getSiteVersion();
-        if (currentVersion !== '1.07') {
-            this.setSiteVersion('1.07');
+        if (currentVersion !== '1.08') {
+            this.setSiteVersion('1.08');
         }
         if (!localStorage.getItem('aboutText')) {
             this.saveAboutText(defaultAboutText);
@@ -320,11 +320,6 @@ const DataManager = {
         const filtered = events.filter(event => event.id !== parseInt(id));
         this.saveEvents(filtered);
         return filtered;
-    },
-
-    // Admin authentication
-    checkPassword(password) {
-        return ADMIN_PASSWORDS.includes(password);
     },
 
     // Version management

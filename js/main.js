@@ -511,16 +511,47 @@ function initializeAdminToggle() {
     const adminToggle = document.getElementById('admin-toggle');
     const adminModal = document.getElementById('admin-login-modal');
     const closeBtn = adminModal.querySelector('.close');
+    const logoutBtn = document.getElementById('admin-logout');
+
+    // Set up auth state listener for session persistence
+    if (typeof FirebaseAuth !== 'undefined') {
+        FirebaseAuth.onAuthStateChanged((user) => {
+            if (user) {
+                // User is logged in - show admin panel directly
+                console.log('User already logged in:', user.email);
+            }
+        });
+    }
 
     if (adminToggle) {
         adminToggle.addEventListener('click', function() {
-            adminModal.style.display = 'flex';
+            // Check if already logged in via Firebase
+            if (typeof FirebaseAuth !== 'undefined' && FirebaseAuth.isLoggedIn()) {
+                // Already logged in, go directly to admin panel
+                showAdminPanel();
+            } else {
+                adminModal.style.display = 'flex';
+            }
         });
     }
 
     if (closeBtn) {
         closeBtn.addEventListener('click', function() {
             adminModal.style.display = 'none';
+        });
+    }
+
+    // Handle logout button
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async function() {
+            if (typeof FirebaseAuth !== 'undefined') {
+                const result = await FirebaseAuth.signOut();
+                if (result.success) {
+                    document.getElementById('admin-panel').style.display = 'none';
+                    document.body.style.overflow = '';
+                    console.log('User logged out successfully');
+                }
+            }
         });
     }
 
@@ -541,36 +572,63 @@ function initializeAdminToggle() {
     // Handle admin login
     const loginForm = document.getElementById('admin-login-form');
     if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
+        loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            const email = document.getElementById('admin-email').value;
             const password = document.getElementById('admin-password').value;
+            const errorDiv = document.getElementById('login-error');
+            const submitButton = loginForm.querySelector('button[type="submit"]');
 
-            if (DataManager.checkPassword(password)) {
-                adminModal.style.display = 'none';
-                document.getElementById('admin-panel').style.display = 'block';
-                document.body.style.overflow = 'hidden';
+            // Disable button during login
+            submitButton.disabled = true;
+            const originalText = submitButton.textContent;
+            submitButton.textContent = currentLanguage === 'en' ? 'Logging in...' : 'Logger inn...';
 
-                // Refresh gallery to show any new artworks
-                loadGallery();
-                loadFeaturedWorks();
+            // Use Firebase Auth
+            if (typeof FirebaseAuth !== 'undefined') {
+                const result = await FirebaseAuth.signIn(email, password);
 
-                // Initialize admin panel
-                if (window.AdminPanel) {
-                    AdminPanel.init();
+                if (result.success) {
+                    adminModal.style.display = 'none';
+                    showAdminPanel();
+                    loginForm.reset();
+                } else {
+                    const errorText = currentLanguage === 'en' ? result.message.en : result.message.no;
+                    errorDiv.textContent = errorText;
+                    errorDiv.classList.add('show');
+
+                    setTimeout(() => {
+                        errorDiv.classList.remove('show');
+                    }, 3000);
                 }
             } else {
-                const errorDiv = document.getElementById('login-error');
-                const errorText = currentLanguage === 'en' ? 'Incorrect password' : 'Feil passord';
-                errorDiv.textContent = errorText;
+                // Fallback error if Firebase Auth not loaded
+                errorDiv.textContent = currentLanguage === 'en' ? 'Authentication service unavailable' : 'Autentiseringstjeneste utilgjengelig';
                 errorDiv.classList.add('show');
-
                 setTimeout(() => {
                     errorDiv.classList.remove('show');
                 }, 3000);
             }
 
-            loginForm.reset();
+            // Re-enable button
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
         });
+    }
+}
+
+// Helper function to show admin panel
+function showAdminPanel() {
+    document.getElementById('admin-panel').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+
+    // Refresh gallery to show any new artworks
+    loadGallery();
+    loadFeaturedWorks();
+
+    // Initialize admin panel
+    if (window.AdminPanel) {
+        AdminPanel.init();
     }
 }
 
