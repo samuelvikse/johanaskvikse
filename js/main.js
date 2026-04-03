@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     initializeLightbox();
     initializeContactForm();
     initializeAdminToggle();
+    initializeCVToggle();
     setCurrentYear();
     setSiteVersion();
 });
@@ -630,6 +631,17 @@ function showAdminPanel() {
     if (window.AdminPanel) {
         AdminPanel.init();
     }
+}
+
+/**
+ * CV TOGGLE
+ */
+function initializeCVToggle() {
+    document.querySelectorAll('.cv-category h3').forEach(heading => {
+        heading.addEventListener('click', () => {
+            heading.parentElement.classList.toggle('collapsed');
+        });
+    });
 }
 
 /**

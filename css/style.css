@@ -662,39 +662,91 @@ section {
     margin-bottom: var(--spacing-md);
 }
 
-.memberships {
-    margin-top: var(--spacing-lg);
-    padding: var(--spacing-md);
+/* ============================================
+   CV SECTION
+   ============================================ */
+.cv-section {
     background: var(--color-bg);
-    border-left: 3px solid var(--color-accent);
 }
 
-.memberships h3 {
+.cv-grid {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.cv-category {
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
+    background: var(--color-bg-alt);
+    border-left: 3px solid var(--color-accent);
+    border-radius: 0 8px 8px 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cv-category:hover {
+    border-left-color: var(--color-gold);
+    background: white;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+.cv-category h3 {
     font-family: var(--font-serif);
     font-size: 1.5rem;
     font-weight: 500;
     margin-bottom: var(--spacing-sm);
     color: var(--color-primary);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.memberships ul {
+.cv-category h3::after {
+    content: '▾';
+    font-size: 0.9rem;
+    color: var(--color-accent);
+    transition: transform 0.3s ease;
+}
+
+.cv-category.collapsed h3::after {
+    transform: rotate(-90deg);
+}
+
+.cv-category.collapsed .cv-list {
+    display: none;
+}
+
+.cv-list {
     list-style: none;
-    padding-left: var(--spacing-sm);
+    padding-left: 0;
+    columns: 2;
+    column-gap: var(--spacing-lg);
 }
 
-.memberships li {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
+.cv-list li {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 0.35rem;
     position: relative;
-    padding-left: 1.5rem;
+    padding-left: 1.2rem;
+    color: var(--color-text);
+    break-inside: avoid;
 }
 
-.memberships li::before {
+.cv-list li::before {
     content: '•';
     position: absolute;
     left: 0;
     color: var(--color-accent);
-    font-size: 1.5rem;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 700px) {
+    .cv-list {
+        columns: 1;
+    }
 }
 
 /* ============================================
